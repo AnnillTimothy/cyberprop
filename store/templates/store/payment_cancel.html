@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Payment Cancelled — CyberProp Store{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cancel-card {
+    background: linear-gradient(145deg, #1a1a2e, #0d0d1a);
+    border: 1px solid rgba(255, 68, 68, 0.2);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    max-width: 550px;
+    margin: 3rem auto;
+  }
+  .cancel-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 68, 68, 0.1);
+    border: 2px solid #ff4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: #ff4444;
+    box-shadow: 0 0 30px rgba(255, 68, 68, 0.15);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cancel-card">
+  <div class="cancel-icon"><i class="bi bi-x-lg"></i></div>
+  <h3 class="text-white mb-2">Payment Cancelled</h3>
+  {% if order_number %}
+  <p class="text-secondary">Order <strong class="text-warning">{{ order_number }}</strong> has been cancelled.</p>
+  {% endif %}
+  <p class="text-secondary">Your payment was not processed. No charges have been made.</p>
+  <div class="d-flex gap-3 justify-content-center mt-4">
+    <a href="{% url 'store:product_list' %}" class="btn btn-outline-info">
+      <i class="bi bi-arrow-left"></i> Back to Store
+    </a>
+    <a href="{% url 'store:cart' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-cart3"></i> View Cart
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Redirecting to PayFast…{% endblock %}
+
+{% block extra_css %}
+<style>
+  .redirect-card {
+    background: linear-gradient(145deg, #1a1a2e, #0d0d1a);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    max-width: 500px;
+    margin: 3rem auto;
+  }
+  .spinner-glow {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid rgba(0, 212, 255, 0.1);
+    border-top-color: #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="redirect-card">
+  <div class="spinner-glow"></div>
+  <h4 class="text-white mb-2">Redirecting to PayFast</h4>
+  <p class="text-secondary mb-3">Order <strong class="text-info">{{ order.order_number }}</strong></p>
+  <p class="text-secondary small">You will be redirected to PayFast to complete your payment. If you are not redirected automatically, click the button below.</p>
+
+  <form id="payfast-form" method="post" action="{{ payfast_url }}">
+    {% for key, value in pf_data.items %}
+    <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endfor %}
+    <button type="submit" class="btn btn-outline-info mt-3">
+      <i class="bi bi-arrow-right-circle"></i> Continue to PayFast
+    </button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('payfast-form').submit();
+</script>
+{% endblock %}

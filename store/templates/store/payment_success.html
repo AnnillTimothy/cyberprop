@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Payment Successful — CyberProp Store{% endblock %}
+
+{% block extra_css %}
+<style>
+  .success-card {
+    background: linear-gradient(145deg, #1a1a2e, #0d0d1a);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    max-width: 550px;
+    margin: 3rem auto;
+  }
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(0, 212, 255, 0.1);
+    border: 2px solid #00d4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: #00d4ff;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+  }
+  .btn-cyber {
+    background: linear-gradient(135deg, #00d4ff, #0080ff);
+    color: #0a0a1a;
+    font-weight: 700;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+  .btn-cyber:hover {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    color: #0a0a1a;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-card">
+  <div class="success-icon"><i class="bi bi-check-lg"></i></div>
+  <h3 class="text-white mb-2">Payment Successful!</h3>
+  {% if order_number %}
+  <p class="text-secondary">Your order <strong class="text-info">{{ order_number }}</strong> has been placed.</p>
+  {% endif %}
+  <p class="text-secondary">Thank you for shopping at the CyberProp Merch Store. You will receive a confirmation email shortly.</p>
+  <div class="d-flex gap-3 justify-content-center mt-4">
+    <a href="{% url 'store:order_history' %}" class="btn btn-cyber">
+      <i class="bi bi-bag-check"></i> View Orders
+    </a>
+    <a href="{% url 'store:product_list' %}" class="btn btn-outline-info">
+      <i class="bi bi-arrow-left"></i> Continue Shopping
+    </a>
+  </div>
+</div>
+{% endblock %}
