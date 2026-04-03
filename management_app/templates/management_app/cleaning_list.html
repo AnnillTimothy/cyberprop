@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Cleaning Schedules - CyberProp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cyber-card {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .cyber-card:hover { border-color: rgba(0, 212, 255, 0.5); box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+  .glow-cyan { color: #00d4ff; text-shadow: 0 0 8px rgba(0, 212, 255, 0.3); }
+  .table-cyber { background: #0a0a1a; }
+  .table-cyber thead th { background: #1a1a2e; color: #00d4ff; border-bottom: 1px solid rgba(0, 212, 255, 0.3); font-size: 0.8rem; text-transform: uppercase; }
+  .table-cyber td { border-color: rgba(0, 212, 255, 0.1); color: #c0c8d8; }
+  .filter-btn {
+    color: #8892a4;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    background: transparent;
+    border-radius: 20px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    color: #00d4ff;
+    border-color: rgba(0, 212, 255, 0.5);
+    background: rgba(0, 212, 255, 0.05);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-1" style="color: #00d4ff;"><i class="bi bi-stars"></i> Cleaning Schedules</h2>
+    <small class="text-muted">CyberProp cleaning service management</small>
+  </div>
+  <a href="{% url 'management:overview' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<!-- Filters -->
+<div class="mb-3">
+  <a href="{% url 'management:cleaning' %}" class="filter-btn {% if not status_filter %}active{% endif %}">All</a>
+  <a href="{% url 'management:cleaning' %}?status=scheduled" class="filter-btn {% if status_filter == 'scheduled' %}active{% endif %}">Scheduled</a>
+  <a href="{% url 'management:cleaning' %}?status=completed" class="filter-btn {% if status_filter == 'completed' %}active{% endif %}">Completed</a>
+  <a href="{% url 'management:cleaning' %}?status=cancelled" class="filter-btn {% if status_filter == 'cancelled' %}active{% endif %}">Cancelled</a>
+</div>
+
+<div class="cyber-card">
+  <div class="table-responsive">
+    <table class="table table-cyber table-sm mb-0">
+      <thead>
+        <tr><th>Property</th><th>Date</th><th>Time</th><th>Cleaner</th><th>Cost</th><th>Status</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        {% for schedule in schedules %}
+        <tr>
+          <td>{{ schedule.property.title|truncatechars:25 }}</td>
+          <td>{{ schedule.scheduled_date }}</td>
+          <td>{{ schedule.scheduled_time|time:"H:i" }}</td>
+          <td>{{ schedule.cleaner_name }}</td>
+          <td class="glow-cyan">R{{ schedule.cost|floatformat:2 }}</td>
+          <td>
+            <span class="badge {% if schedule.status == 'scheduled' %}bg-info text-dark{% elif schedule.status == 'completed' %}bg-success{% else %}bg-secondary{% endif %}">
+              {{ schedule.get_status_display }}
+            </span>
+          </td>
+          <td>{{ schedule.notes|truncatechars:40|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-muted text-center py-3">No cleaning schedules found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

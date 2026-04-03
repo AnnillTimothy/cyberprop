@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block title %}Financials: {{ property.title }} - CyberProp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cyber-card {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .cyber-card:hover { border-color: rgba(0, 212, 255, 0.5); box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+  .kpi-value { font-size: 1.8rem; font-weight: 700; }
+  .kpi-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #8892a4; }
+  .glow-green { color: #00ff88; text-shadow: 0 0 8px rgba(0, 255, 136, 0.3); }
+  .glow-red { color: #ff4466; text-shadow: 0 0 8px rgba(255, 68, 102, 0.3); }
+  .glow-cyan { color: #00d4ff; text-shadow: 0 0 8px rgba(0, 212, 255, 0.3); }
+  .table-cyber { background: #0a0a1a; }
+  .table-cyber thead th { background: #1a1a2e; color: #00d4ff; border-bottom: 1px solid rgba(0, 212, 255, 0.3); font-size: 0.8rem; text-transform: uppercase; }
+  .table-cyber td { border-color: rgba(0, 212, 255, 0.1); color: #c0c8d8; }
+  .ownership-badge { padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; }
+  .badge-company { background: rgba(0, 212, 255, 0.15); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); }
+  .badge-investor { background: rgba(255, 136, 68, 0.15); color: #ff8844; border: 1px solid rgba(255, 136, 68, 0.3); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-1" style="color: #00d4ff;"><i class="bi bi-graph-up"></i> {{ property.title }}</h2>
+    <span class="ownership-badge {% if property.ownership_type == 'company' %}badge-company{% else %}badge-investor{% endif %}">
+      {{ property.get_ownership_type_display }}
+    </span>
+    <small class="text-muted ms-2">{{ property.address }}</small>
+  </div>
+  <div>
+    <a href="{% url 'management:expenses' property.pk %}" class="btn btn-outline-info btn-sm me-1"><i class="bi bi-receipt"></i> Expenses</a>
+    <a href="{% url 'management:income' property.pk %}" class="btn btn-outline-info btn-sm me-1"><i class="bi bi-cash"></i> Income</a>
+    <a href="{% url 'management:overview' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<!-- Financial KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Monthly Rent</div>
+      <div class="kpi-value glow-cyan">R{{ property.monthly_rent|floatformat:2 }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Total Income</div>
+      <div class="kpi-value glow-green">R{{ total_income|floatformat:2 }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Total Expenses</div>
+      <div class="kpi-value glow-red">R{{ total_expenses|floatformat:2 }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Net Position</div>
+      <div class="kpi-value {% if net >= 0 %}glow-green{% else %}glow-red{% endif %}">R{{ net|floatformat:2 }}</div>
+    </div>
+  </div>
+</div>
+
+{% if property.ownership_type == 'investor' %}
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Management Fee Rate</div>
+      <div class="kpi-value glow-cyan">{{ property.management_fee_percent }}%</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Total Fees Earned</div>
+      <div class="kpi-value glow-green">R{{ total_management_fees|floatformat:2 }}</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Property Owner</div>
+      <div style="color: #00d4ff; font-size: 1.1rem;">{{ property.owner.get_full_name|default:property.owner.username }}</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Recent Income & Expenses -->
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="cyber-card">
+      <h5 class="mb-3" style="color: #00d4ff;"><i class="bi bi-arrow-down-circle"></i> Recent Income</h5>
+      <div class="table-responsive">
+        <table class="table table-cyber table-sm mb-0">
+          <thead><tr><th>Type</th><th>Amount</th><th>Date</th><th>Paid</th></tr></thead>
+          <tbody>
+            {% for inc in incomes %}
+            <tr>
+              <td>{{ inc.get_income_type_display }}</td>
+              <td class="glow-green">R{{ inc.amount|floatformat:2 }}</td>
+              <td>{{ inc.date }}</td>
+              <td>
+                {% if inc.is_paid %}
+                <span class="badge bg-success">Paid</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">Pending</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-muted text-center">No income records</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="cyber-card">
+      <h5 class="mb-3" style="color: #00d4ff;"><i class="bi bi-arrow-up-circle"></i> Recent Expenses</h5>
+      <div class="table-responsive">
+        <table class="table table-cyber table-sm mb-0">
+          <thead><tr><th>Category</th><th>Amount</th><th>Date</th><th>Description</th></tr></thead>
+          <tbody>
+            {% for exp in expenses %}
+            <tr>
+              <td>{{ exp.get_category_display }}</td>
+              <td class="glow-red">R{{ exp.amount|floatformat:2 }}</td>
+              <td>{{ exp.date }}</td>
+              <td>{{ exp.description|truncatechars:30 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-muted text-center">No expense records</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if payouts %}
+<div class="row g-3 mt-1">
+  <div class="col-12">
+    <div class="cyber-card">
+      <h5 class="mb-3" style="color: #00d4ff;"><i class="bi bi-wallet2"></i> Owner Payouts</h5>
+      <div class="table-responsive">
+        <table class="table table-cyber table-sm mb-0">
+          <thead><tr><th>Period</th><th>Rent Collected</th><th>Mgmt Fee</th><th>Cleaning</th><th>Net Payout</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for payout in payouts %}
+            <tr>
+              <td>{{ payout.period_month|date:"M Y" }}</td>
+              <td>R{{ payout.rent_collected|floatformat:2 }}</td>
+              <td class="glow-cyan">R{{ payout.management_fee|floatformat:2 }}</td>
+              <td>R{{ payout.cleaning_deductions|floatformat:2 }}</td>
+              <td class="glow-green">R{{ payout.net_payout|floatformat:2 }}</td>
+              <td>
+                <span class="badge {% if payout.status == 'paid' %}bg-success{% elif payout.status == 'pending' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                  {{ payout.get_status_display }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

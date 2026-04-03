@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Investor Payouts - CyberProp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cyber-card {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .cyber-card:hover { border-color: rgba(0, 212, 255, 0.5); box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+  .kpi-value { font-size: 1.8rem; font-weight: 700; }
+  .kpi-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #8892a4; }
+  .glow-green { color: #00ff88; text-shadow: 0 0 8px rgba(0, 255, 136, 0.3); }
+  .glow-cyan { color: #00d4ff; text-shadow: 0 0 8px rgba(0, 212, 255, 0.3); }
+  .table-cyber { background: #0a0a1a; }
+  .table-cyber thead th { background: #1a1a2e; color: #00d4ff; border-bottom: 1px solid rgba(0, 212, 255, 0.3); font-size: 0.8rem; text-transform: uppercase; }
+  .table-cyber td { border-color: rgba(0, 212, 255, 0.1); color: #c0c8d8; }
+  .filter-btn {
+    color: #8892a4;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    background: transparent;
+    border-radius: 20px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    color: #00d4ff;
+    border-color: rgba(0, 212, 255, 0.5);
+    background: rgba(0, 212, 255, 0.05);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-1" style="color: #00d4ff;"><i class="bi bi-wallet2"></i> Investor Payouts</h2>
+    <small class="text-muted">Track payouts to investor property owners</small>
+  </div>
+  <a href="{% url 'management:overview' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Total Paid Out</div>
+      <div class="kpi-value glow-green">R{{ total_payouts|floatformat:2 }}</div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="cyber-card text-center">
+      <div class="kpi-label">Total Management Fees</div>
+      <div class="kpi-value glow-cyan">R{{ total_fees|floatformat:2 }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="mb-3">
+  <a href="{% url 'management:payouts' %}" class="filter-btn {% if not status_filter %}active{% endif %}">All</a>
+  <a href="{% url 'management:payouts' %}?status=pending" class="filter-btn {% if status_filter == 'pending' %}active{% endif %}">Pending</a>
+  <a href="{% url 'management:payouts' %}?status=paid" class="filter-btn {% if status_filter == 'paid' %}active{% endif %}">Paid</a>
+  <a href="{% url 'management:payouts' %}?status=failed" class="filter-btn {% if status_filter == 'failed' %}active{% endif %}">Failed</a>
+</div>
+
+<div class="cyber-card">
+  <div class="table-responsive">
+    <table class="table table-cyber table-sm mb-0">
+      <thead>
+        <tr><th>Property</th><th>Owner</th><th>Period</th><th>Rent Collected</th><th>Mgmt Fee</th><th>Cleaning</th><th>Net Payout</th><th>Status</th><th>Paid Date</th><th>Reference</th></tr>
+      </thead>
+      <tbody>
+        {% for payout in payouts %}
+        <tr>
+          <td><a href="{% url 'management:property_financials' payout.property.pk %}" style="color: #00d4ff;">{{ payout.property.title|truncatechars:20 }}</a></td>
+          <td>{{ payout.owner.get_full_name|default:payout.owner.username }}</td>
+          <td>{{ payout.period_month|date:"M Y" }}</td>
+          <td>R{{ payout.rent_collected|floatformat:2 }}</td>
+          <td class="glow-cyan">R{{ payout.management_fee|floatformat:2 }}</td>
+          <td>R{{ payout.cleaning_deductions|floatformat:2 }}</td>
+          <td class="glow-green">R{{ payout.net_payout|floatformat:2 }}</td>
+          <td>
+            <span class="badge {% if payout.status == 'paid' %}bg-success{% elif payout.status == 'pending' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+              {{ payout.get_status_display }}
+            </span>
+          </td>
+          <td>{{ payout.paid_date|default:"-" }}</td>
+          <td>{{ payout.reference|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="10" class="text-muted text-center py-3">No payouts recorded yet</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
