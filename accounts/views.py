@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from .forms import CustomUserCreationForm, LoginForm, ProfileUpdateForm
 
@@ -28,7 +29,9 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                next_url = request.GET.get('next', 'dashboard:home')
+                next_url = request.GET.get('next', '')
+                if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                    next_url = 'dashboard:home'
                 return redirect(next_url)
             else:
                 messages.error(request, 'Invalid username or password.')
