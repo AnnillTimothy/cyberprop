@@ -1,0 +1,34 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block page_title %}Property: {{ property.title }}{% endblock %}
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="page-title mb-0">{{ property.title }}</h5>
+  <a href="{% url 'dashboard:property_list' %}" class="btn-cyber"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#details">Details</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#financials">Financials</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#maint">Maintenance</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#bookingstab">Bookings</a></li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="details">
+    <div class="section-card">
+      <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="row g-3">{% for field in form %}<div class="{% if field.name == 'description' or field.name == 'amenities' %}col-12{% else %}col-md-6 col-lg-4{% endif %} mb-2"><label class="form-label">{{ field.label }}</label>{% if field.field.widget.input_type == 'checkbox' %}<div class="form-check"><input type="checkbox" name="{{ field.name }}" class="form-check-input" {% if field.value %}checked{% endif %}><label class="form-check-label">{{ field.label }}</label></div>{% else %}{{ field }}{% endif %}{% if field.errors %}<div class="text-danger small">{{ field.errors.0 }}</div>{% endif %}</div>{% endfor %}</div>
+        <div class="mt-3"><button type="submit" class="btn-cyber-green"><i class="bi bi-check-lg"></i> Save Changes</button></div>
+      </form>
+    </div>
+  </div>
+  <div class="tab-pane fade" id="financials">
+    <div class="section-card mb-3"><h6 style="color:var(--cyan)">Recent Income</h6><table class="cyber-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Paid</th></tr></thead><tbody>{% for i in incomes %}<tr><td>{{ i.date }}</td><td>{{ i.income_type }}</td><td>R{{ i.amount|floatformat:2 }}</td><td>{% if i.is_paid %}<span class="badge badge-green">Yes</span>{% else %}<span class="badge badge-dim">No</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted">No income records</td></tr>{% endfor %}</tbody></table></div>
+    <div class="section-card"><h6 style="color:var(--pink)">Recent Expenses</h6><table class="cyber-table"><thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Description</th></tr></thead><tbody>{% for e in expenses %}<tr><td>{{ e.date }}</td><td>{{ e.category }}</td><td>R{{ e.amount|floatformat:2 }}</td><td>{{ e.description }}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted">No expenses</td></tr>{% endfor %}</tbody></table></div>
+  </div>
+  <div class="tab-pane fade" id="maint">
+    <div class="section-card"><table class="cyber-table"><thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Created</th></tr></thead><tbody>{% for m in maintenance %}<tr><td>{{ m.title }}</td><td><span class="badge {% if m.priority == 'urgent' %}badge-pink{% elif m.priority == 'high' %}badge-warn{% else %}badge-dim{% endif %}">{{ m.priority }}</span></td><td><span class="badge {% if m.status == 'completed' %}badge-green{% elif m.status == 'in_progress' %}badge-cyan{% else %}badge-warn{% endif %}">{{ m.status }}</span></td><td>{{ m.created_at|date:"d M Y" }}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted">No maintenance requests</td></tr>{% endfor %}</tbody></table></div>
+  </div>
+  <div class="tab-pane fade" id="bookingstab">
+    <div class="section-card"><table class="cyber-table"><thead><tr><th>User</th><th>Date</th><th>Status</th><th>Created</th></tr></thead><tbody>{% for b in bookings %}<tr><td>{{ b.user.username }}</td><td>{{ b.viewing_date|date:"d M Y H:i" }}</td><td><span class="badge {% if b.status == 'confirmed' %}badge-green{% elif b.status == 'pending' %}badge-warn{% else %}badge-dim{% endif %}">{{ b.status }}</span></td><td>{{ b.created_at|date:"d M Y" }}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted">No bookings</td></tr>{% endfor %}</tbody></table></div>
+  </div>
+</div>
+{% endblock %}

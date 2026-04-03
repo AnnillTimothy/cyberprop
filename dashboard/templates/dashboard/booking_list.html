@@ -1,0 +1,48 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block dashboard_title %}Bookings{% endblock %}
+{% block dashboard_content %}
+<h2 class="text-info mb-4"><i class="bi bi-calendar-event"></i> Viewing Bookings</h2>
+<div class="mb-3">
+  <a href="?status=pending" class="btn btn-sm btn-outline-warning">Pending</a>
+  <a href="?status=confirmed" class="btn btn-sm btn-outline-success">Confirmed</a>
+  <a href="?status=cancelled" class="btn btn-sm btn-outline-danger">Cancelled</a>
+  <a href="?" class="btn btn-sm btn-outline-info">All</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-dark table-hover">
+    <thead><tr>
+      <th>Property</th><th>User</th><th>Date</th><th>Status</th><th>Notes</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+      {% for booking in bookings %}
+      <tr>
+        <td>{{ booking.property.title }}</td>
+        <td>{{ booking.user.get_full_name|default:booking.user.username }}</td>
+        <td>{{ booking.viewing_date|date:"d M Y H:i" }}</td>
+        <td>
+          {% if booking.status == 'pending' %}<span class="badge bg-warning text-dark">Pending</span>
+          {% elif booking.status == 'confirmed' %}<span class="badge bg-success">Confirmed</span>
+          {% elif booking.status == 'cancelled' %}<span class="badge bg-danger">Cancelled</span>
+          {% else %}<span class="badge bg-info">{{ booking.get_status_display }}</span>{% endif %}
+        </td>
+        <td>{{ booking.notes|truncatewords:10 }}</td>
+        <td>
+          {% if booking.status == 'pending' %}
+          <form method="post" action="{% url 'dashboard:booking_update' booking.pk %}" class="d-inline">
+            {% csrf_token %}<input type="hidden" name="status" value="confirmed">
+            <button class="btn btn-sm btn-outline-success">Confirm</button>
+          </form>
+          <form method="post" action="{% url 'dashboard:booking_update' booking.pk %}" class="d-inline">
+            {% csrf_token %}<input type="hidden" name="status" value="cancelled">
+            <button class="btn btn-sm btn-outline-danger">Cancel</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted">No bookings found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

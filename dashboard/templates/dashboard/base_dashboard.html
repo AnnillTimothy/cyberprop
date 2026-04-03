@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --dash-bg: #0a0a1a;
+    --sidebar-bg: #0d0d1a;
+    --card-bg: #1a1a2e;
+    --cyan: #00d4ff;
+    --cyan-dim: rgba(0,212,255,0.15);
+    --pink: #ff006e;
+    --green: #00ff88;
+    --warn: #ffb800;
+    --text: #e0e0e0;
+    --text-dim: #888;
+  }
+  body { background: var(--dash-bg) !important; }
+  /* hide default nav and reset container */
+  .navbar { display: none !important; }
+  main.container { max-width: 100%; padding: 0; margin: 0; }
+
+  .dash-wrap { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .dash-sidebar {
+    width: 250px; min-width: 250px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid rgba(0,212,255,0.12);
+    position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 1040;
+    display: flex; flex-direction: column;
+    transition: transform .3s;
+  }
+  .dash-sidebar .brand {
+    padding: 1.2rem 1.25rem;
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--cyan);
+    border-bottom: 1px solid rgba(0,212,255,0.12);
+    text-decoration: none; display: flex; align-items: center; gap: .5rem;
+  }
+  .dash-sidebar .brand i { font-size: 1.5rem; }
+  .dash-sidebar nav { flex: 1; padding: .75rem 0; overflow-y: auto; }
+  .dash-sidebar .nav-link {
+    display: flex; align-items: center; gap: .65rem;
+    padding: .65rem 1.25rem; color: var(--text-dim);
+    font-size: .9rem; text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all .2s;
+  }
+  .dash-sidebar .nav-link:hover,
+  .dash-sidebar .nav-link.active {
+    color: var(--cyan);
+    background: var(--cyan-dim);
+    border-left-color: var(--cyan);
+    text-shadow: 0 0 8px rgba(0,212,255,0.4);
+  }
+  .dash-sidebar .nav-link i { font-size: 1.1rem; width: 1.4rem; text-align: center; }
+
+  /* ── Top bar ── */
+  .dash-topbar {
+    height: 56px; background: var(--sidebar-bg);
+    border-bottom: 1px solid rgba(0,212,255,0.12);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.5rem;
+  }
+  .dash-topbar .user-info { display: flex; align-items: center; gap: .75rem; color: var(--text); }
+  .dash-topbar .user-info .badge { background: var(--cyan); color: #000; }
+  .dash-topbar .btn-logout {
+    color: var(--pink); border-color: var(--pink); font-size: .85rem;
+  }
+  .dash-topbar .btn-logout:hover { background: var(--pink); color: #fff; }
+
+  /* ── Main ── */
+  .dash-main { margin-left: 250px; flex: 1; min-height: 100vh; }
+  .dash-content { padding: 1.5rem; }
+
+  /* ── Cards ── */
+  .kpi-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(0,212,255,0.08);
+    border-radius: .75rem;
+    padding: 1.25rem;
+    box-shadow: 0 0 15px rgba(0,212,255,0.1);
+    transition: box-shadow .3s, transform .2s;
+  }
+  .kpi-card:hover { box-shadow: 0 0 25px rgba(0,212,255,0.2); transform: translateY(-2px); }
+  .kpi-card .kpi-icon { font-size: 2rem; color: var(--cyan); }
+  .kpi-card .kpi-num { font-size: 1.75rem; font-weight: 700; color: #fff; }
+  .kpi-card .kpi-label { font-size: .85rem; color: var(--text-dim); }
+
+  /* ── Table ── */
+  .cyber-table { width: 100%; border-collapse: collapse; }
+  .cyber-table th {
+    font-size: .78rem; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--cyan); border-bottom: 1px solid rgba(0,212,255,0.15);
+    padding: .75rem .5rem; text-align: left;
+  }
+  .cyber-table td {
+    padding: .7rem .5rem; border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text); font-size: .88rem; vertical-align: middle;
+  }
+  .cyber-table tr:hover td { background: rgba(0,212,255,0.04); }
+
+  /* ── Badges ── */
+  .badge-cyan { background: var(--cyan); color: #000; }
+  .badge-pink { background: var(--pink); color: #fff; }
+  .badge-green { background: var(--green); color: #000; }
+  .badge-warn { background: var(--warn); color: #000; }
+  .badge-dim { background: #333; color: #aaa; }
+
+  /* ── Buttons ── */
+  .btn-cyber {
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,212,255,0.05));
+    border: 1px solid var(--cyan); color: var(--cyan);
+    border-radius: .4rem; padding: .35rem .85rem; font-size: .85rem;
+    transition: all .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-cyber:hover { background: var(--cyan); color: #000; box-shadow: 0 0 15px rgba(0,212,255,0.4); }
+  .btn-cyber-pink {
+    background: linear-gradient(135deg, rgba(255,0,110,0.15), rgba(255,0,110,0.05));
+    border: 1px solid var(--pink); color: var(--pink);
+    border-radius: .4rem; padding: .35rem .85rem; font-size: .85rem;
+    transition: all .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-cyber-pink:hover { background: var(--pink); color: #fff; box-shadow: 0 0 15px rgba(255,0,110,0.4); }
+  .btn-cyber-green {
+    background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,255,136,0.05));
+    border: 1px solid var(--green); color: var(--green);
+    border-radius: .4rem; padding: .35rem .85rem; font-size: .85rem;
+    transition: all .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-cyber-green:hover { background: var(--green); color: #000; box-shadow: 0 0 15px rgba(0,255,136,0.4); }
+
+  /* ── Forms ── */
+  .dash-content .form-control, .dash-content .form-select {
+    background: #111125; border-color: rgba(0,212,255,0.2); color: var(--text);
+  }
+  .dash-content .form-control:focus, .dash-content .form-select:focus {
+    border-color: var(--cyan); box-shadow: 0 0 10px rgba(0,212,255,0.25);
+    background: #111125; color: #fff;
+  }
+  .dash-content label { color: var(--text-dim); font-size: .85rem; }
+
+  /* ── Misc ── */
+  .page-title { font-size: 1.35rem; font-weight: 700; color: #fff; margin-bottom: 1.25rem; }
+  .section-card {
+    background: var(--card-bg); border-radius: .75rem; padding: 1.25rem;
+    border: 1px solid rgba(0,212,255,0.06);
+    box-shadow: 0 0 15px rgba(0,212,255,0.05);
+  }
+  .activity-item {
+    padding: .6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: .88rem;
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .sidebar-toggle { display: none; background: none; border: none; color: var(--cyan); font-size: 1.5rem; cursor: pointer; }
+  @media (max-width: 991px) {
+    .dash-sidebar { transform: translateX(-100%); }
+    .dash-sidebar.show { transform: translateX(0); }
+    .dash-main { margin-left: 0; }
+    .sidebar-toggle { display: inline-block; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1035; }
+    .dash-sidebar.show ~ .sidebar-overlay { display: block; }
+  }
+  .page-link { background: var(--card-bg); border-color: rgba(0,212,255,0.12); color: var(--cyan); }
+  .page-link:hover { background: rgba(0,212,255,0.1); color: var(--cyan); }
+  .page-item.active .page-link { background: var(--cyan); border-color: var(--cyan); color: #000; }
+  .page-item.disabled .page-link { background: #111; color: #555; border-color: rgba(0,212,255,0.06); }
+
+  /* tabs */
+  .nav-tabs { border-bottom-color: rgba(0,212,255,0.15); }
+  .nav-tabs .nav-link { color: var(--text-dim); border: none; }
+  .nav-tabs .nav-link:hover { color: var(--cyan); border-bottom: 2px solid var(--cyan); }
+  .nav-tabs .nav-link.active { color: var(--cyan); background: transparent; border-bottom: 2px solid var(--cyan); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-wrap">
+  <!-- Sidebar -->
+  <aside class="dash-sidebar" id="dashSidebar">
+    <a href="{% url 'dashboard:home' %}" class="brand"><i class="bi bi-cpu"></i> CyberProp</a>
+    <nav>
+      <a href="{% url 'dashboard:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+        <i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+      <a href="{% url 'dashboard:property_list' %}" class="nav-link {% if 'property' in request.resolver_match.url_name %}active{% endif %}">
+        <i class="bi bi-building"></i> Properties</a>
+      <a href="{% url 'dashboard:user_list' %}" class="nav-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
+        <i class="bi bi-people"></i> Users</a>
+      <a href="{% url 'dashboard:submission_list' %}" class="nav-link {% if 'submission' in request.resolver_match.url_name %}active{% endif %}">
+        <i class="bi bi-file-earmark-arrow-up"></i> Submissions</a>
+      <a href="{% url 'dashboard:booking_list' %}" class="nav-link {% if 'booking' in request.resolver_match.url_name %}active{% endif %}">
+        <i class="bi bi-calendar-check"></i> Bookings</a>
+      <a href="{% url 'dashboard:enquiry_list' %}" class="nav-link {% if 'enquiry' in request.resolver_match.url_name %}active{% endif %}">
+        <i class="bi bi-envelope"></i> Enquiries</a>
+      <a href="{% url 'dashboard:order_list' %}" class="nav-link {% if 'order' in request.resolver_match.url_name %}active{% endif %}">
+        <i class="bi bi-cart3"></i> Orders</a>
+      <a href="{% url 'dashboard:reports' %}" class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+        <i class="bi bi-bar-chart-line"></i> Reports</a>
+    </nav>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main -->
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+        <span class="text-white fw-bold" style="font-size:.95rem;">{% block page_title %}Dashboard{% endblock %}</span>
+      </div>
+      <div class="user-info">
+        <i class="bi bi-person-circle"></i>
+        <span>{{ user.username }}</span>
+        <span class="badge">{{ user.role }}</span>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-sm btn-outline-danger btn-logout">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
+    </div>
+    <div class="dash-content">
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert" style="background:var(--card-bg);border-color:var(--cyan);color:var(--text);">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% block dashboard_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('sidebarToggle');
+    const sb = document.getElementById('dashSidebar');
+    const ov = document.getElementById('sidebarOverlay');
+    if (btn) btn.addEventListener('click', () => sb.classList.toggle('show'));
+    if (ov) ov.addEventListener('click', () => sb.classList.remove('show'));
+  });
+</script>
+{% block dashboard_js %}{% endblock %}
+{% endblock %}
