@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}CyberProp — Smart Property Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/global.css' %}">
+{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="grid-lines"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">
+      Next-Gen <span class="glow-text">Property Management</span>
+    </h1>
+    <p class="hero-subtitle">
+      CyberProp combines cutting-edge technology with expert property management
+      to deliver seamless experiences for tenants, owners, and investors.
+    </p>
+    <div class="hero-cta">
+      <a href="{% url 'properties:property_list' %}" class="btn btn-outline-info btn-lg me-3">
+        <i class="bi bi-search"></i> Browse Properties
+      </a>
+      <a href="{% url 'core:about' %}" class="btn btn-outline-light btn-lg">
+        Learn More <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-number">150+</div>
+          <div class="text-muted mt-2">Properties Managed</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-number">500+</div>
+          <div class="text-muted mt-2">Happy Tenants</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-number">98%</div>
+          <div class="text-muted mt-2">Occupancy Rate</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-number">R50M+</div>
+          <div class="text-muted mt-2">Portfolio Value</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="section-padding" style="background: linear-gradient(180deg, transparent, rgba(0,229,255,0.02), transparent);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Why <span class="text-info">CyberProp</span>?</h2>
+      <p class="text-muted">Comprehensive property management powered by technology</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+          <h5 class="fw-bold mb-3">Trusted Management</h5>
+          <p class="text-muted">Professional property management with transparent reporting, regular inspections, and dedicated support for owners and tenants.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <h5 class="fw-bold mb-3">Investor Dashboard</h5>
+          <p class="text-muted">Real-time financial tracking, income & expense reports, and automated investor payouts with complete visibility.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon"><i class="bi bi-tools"></i></div>
+          <h5 class="fw-bold mb-3">Maintenance Portal</h5>
+          <p class="text-muted">Submit and track maintenance requests with priority handling, contractor assignment, and cost management.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon"><i class="bi bi-calendar-check"></i></div>
+          <h5 class="fw-bold mb-3">Online Bookings</h5>
+          <p class="text-muted">Schedule property viewings online with instant confirmation and calendar integration for seamless scheduling.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon"><i class="bi bi-credit-card-2-front"></i></div>
+          <h5 class="fw-bold mb-3">Secure Payments</h5>
+          <p class="text-muted">Integrated PayFast payment processing for rent, deposits, and merchandise purchases with full transaction history.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center h-100">
+          <div class="feature-icon"><i class="bi bi-bag-check"></i></div>
+          <h5 class="fw-bold mb-3">Merch Store</h5>
+          <p class="text-muted">Browse and shop our exclusive CyberProp merchandise with secure checkout and order tracking.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Properties -->
+{% if featured_properties %}
+<section class="section-padding">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Featured <span class="text-info">Properties</span></h2>
+      <p class="text-muted">Handpicked properties for you</p>
+    </div>
+    <div class="row g-4">
+      {% for property in featured_properties %}
+      <div class="col-md-4">
+        <div class="property-card card h-100">
+          <div class="position-relative">
+            {% if property.featured_image %}
+            <img src="{{ property.featured_image.url }}" class="card-img-top" alt="{{ property.title }}">
+            {% else %}
+            <div class="card-img-top bg-dark d-flex align-items-center justify-content-center" style="height:200px;">
+              <i class="bi bi-building text-info" style="font-size:3rem;"></i>
+            </div>
+            {% endif %}
+            <span class="badge-rent">R{{ property.monthly_rent|floatformat:0 }}/mo</span>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ property.title }}</h5>
+            <p class="text-muted small mb-2">
+              <i class="bi bi-geo-alt"></i> {{ property.city }}, {{ property.province }}
+            </p>
+            <div class="d-flex gap-3 text-muted small">
+              <span><i class="bi bi-door-open"></i> {{ property.bedrooms }} Bed</span>
+              <span><i class="bi bi-droplet"></i> {{ property.bathrooms }} Bath</span>
+              {% if property.parking %}
+              <span><i class="bi bi-car-front"></i> {{ property.parking }} Park</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="card-footer bg-transparent border-top border-secondary">
+            <a href="{% url 'properties:property_detail' property.slug %}" class="btn btn-outline-info btn-sm w-100">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{% url 'properties:property_list' %}" class="btn btn-outline-info btn-lg">
+        View All Properties <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="cta-section section-padding">
+  <div class="container text-center">
+    <h2 class="section-title mb-3">Ready to Get <span class="text-info">Started</span>?</h2>
+    <p class="text-muted mb-4 mx-auto" style="max-width: 600px;">
+      Whether you're looking for a rental, want your property managed, or interested in investing — CyberProp has you covered.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{% url 'properties:property_list' %}" class="btn btn-outline-info btn-lg">
+        <i class="bi bi-search"></i> Find a Property
+      </a>
+      <a href="{% url 'core:contact' %}" class="btn btn-outline-light btn-lg">
+        <i class="bi bi-envelope"></i> Contact Us
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- GSAP Core + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="{% static 'js/gsap-animations.js' %}"></script>
+{% endblock %}

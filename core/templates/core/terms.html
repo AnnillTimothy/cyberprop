@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Terms & Conditions — CyberProp{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/global.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Terms & <span class="text-info">Conditions</span></h1>
+  <p class="text-muted mt-2">Last updated: April 2026</p>
+</div>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 legal-content">
+
+      <h2>1. Introduction</h2>
+      <p>
+        Welcome to CyberProp. These Terms and Conditions govern your use of our website and services.
+        By accessing or using CyberProp, you agree to be bound by these terms. If you do not agree,
+        please do not use our platform.
+      </p>
+
+      <h2>2. Definitions</h2>
+      <ul>
+        <li><strong>"CyberProp"</strong> refers to the CyberProp property management platform and its operators.</li>
+        <li><strong>"User"</strong> refers to any person who accesses or uses the platform.</li>
+        <li><strong>"Services"</strong> refers to all services offered through the platform, including property listings, management, and e-commerce.</li>
+      </ul>
+
+      <h2>3. User Accounts</h2>
+      <p>
+        To access certain features, you must register for an account. You are responsible for maintaining
+        the confidentiality of your login credentials and for all activities under your account. You must
+        provide accurate and complete information during registration.
+      </p>
+
+      <h2>4. Property Listings</h2>
+      <p>
+        CyberProp strives to ensure the accuracy of property listings but does not guarantee that all
+        information is complete or error-free. Property availability and pricing are subject to change
+        without notice. All listings are subject to approval by CyberProp administration.
+      </p>
+
+      <h2>5. Payments and Transactions</h2>
+      <p>
+        Payments processed through CyberProp are handled via PayFast, a secure payment gateway.
+        By making a purchase, you agree to PayFast's terms of service. CyberProp is not responsible
+        for payment processing errors caused by third-party services.
+      </p>
+
+      <h2>6. User Conduct</h2>
+      <p>Users agree not to:</p>
+      <ul>
+        <li>Provide false or misleading information</li>
+        <li>Use the platform for unlawful purposes</li>
+        <li>Attempt to gain unauthorised access to other accounts or systems</li>
+        <li>Interfere with the proper functioning of the platform</li>
+        <li>Copy, reproduce, or distribute platform content without permission</li>
+      </ul>
+
+      <h2>7. Intellectual Property</h2>
+      <p>
+        All content on CyberProp, including text, graphics, logos, and software, is the property of
+        CyberProp or its licensors and is protected by South African and international copyright laws.
+      </p>
+
+      <h2>8. Limitation of Liability</h2>
+      <p>
+        CyberProp is provided "as is" without warranties of any kind. To the maximum extent permitted
+        by law, CyberProp shall not be liable for any indirect, incidental, or consequential damages
+        arising from your use of the platform.
+      </p>
+
+      <h2>9. Termination</h2>
+      <p>
+        CyberProp reserves the right to suspend or terminate your account at any time, with or without
+        notice, for any violation of these terms or for any other reason deemed necessary.
+      </p>
+
+      <h2>10. Governing Law</h2>
+      <p>
+        These terms are governed by the laws of the Republic of South Africa. Any disputes shall be
+        subject to the exclusive jurisdiction of the courts of South Africa.
+      </p>
+
+      <h2>11. Changes to These Terms</h2>
+      <p>
+        CyberProp may update these Terms and Conditions at any time. Continued use of the platform
+        after changes constitutes acceptance of the revised terms.
+      </p>
+
+      <h2>12. Contact</h2>
+      <p>
+        If you have questions about these terms, please <a href="{% url 'core:contact' %}" class="text-info">contact us</a>.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
