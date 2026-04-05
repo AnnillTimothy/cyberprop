@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% block title %}Management Overview - CyberProp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cyber-card {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .cyber-card:hover {
+    border-color: rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+  }
+  .kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+  }
+  .kpi-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8892a4;
+  }
+  .glow-green { color: #00ff88; text-shadow: 0 0 8px rgba(0, 255, 136, 0.3); }
+  .glow-red { color: #ff4466; text-shadow: 0 0 8px rgba(255, 68, 102, 0.3); }
+  .glow-cyan { color: #00d4ff; text-shadow: 0 0 8px rgba(0, 212, 255, 0.3); }
+  .glow-yellow { color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
+  .table-cyber { background: #0a0a1a; }
+  .table-cyber thead th {
+    background: #1a1a2e;
+    color: #00d4ff;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .table-cyber td { border-color: rgba(0, 212, 255, 0.1); color: #c0c8d8; }
+  .nav-cyber .nav-link {
+    color: #8892a4;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+  .nav-cyber .nav-link.active, .nav-cyber .nav-link:hover {
+    color: #00d4ff;
+    border-color: rgba(0, 212, 255, 0.3);
+    background: rgba(0, 212, 255, 0.05);
+  }
+  .badge-cyber {
+    background: rgba(0, 212, 255, 0.15);
+    color: #00d4ff;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if access_denied %}
+<div class="text-center py-5">
+  <i class="bi bi-shield-lock" style="font-size: 3rem; color: #ff4466;"></i>
+  <h3 class="mt-3" style="color: #ff4466;">Access Denied</h3>
+  <p class="text-muted">You need staff or admin privileges to access management features.</p>
+</div>
+{% else %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0" style="color: #00d4ff;"><i class="bi bi-speedometer2"></i> Management Overview</h2>
+    <small class="text-muted">Property management dashboard</small>
+  </div>
+  <nav class="nav nav-cyber">
+    <a class="nav-link active" href="{% url 'management:overview' %}"><i class="bi bi-grid"></i> Overview</a>
+    <a class="nav-link" href="{% url 'management:maintenance' %}"><i class="bi bi-tools"></i> Maintenance</a>
+    <a class="nav-link" href="{% url 'management:payouts' %}"><i class="bi bi-wallet2"></i> Payouts</a>
+    <a class="nav-link" href="{% url 'management:cleaning' %}"><i class="bi bi-stars"></i> Cleaning</a>
+  </nav>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-lg-2">
+    <div class="cyber-card text-center">
+      <div class="kpi-value">{{ total_properties }}</div>
+      <div class="kpi-label">Total Properties</div>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="cyber-card text-center">
+      <div class="kpi-value">{{ company_properties }}</div>
+      <div class="kpi-label">Company Owned</div>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="cyber-card text-center">
+      <div class="kpi-value">{{ investor_properties }}</div>
+      <div class="kpi-label">Investor Owned</div>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="cyber-card text-center">
+      <div class="kpi-value glow-green">R{{ total_income|floatformat:0 }}</div>
+      <div class="kpi-label">Total Income</div>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="cyber-card text-center">
+      <div class="kpi-value glow-red">R{{ total_expenses|floatformat:0 }}</div>
+      <div class="kpi-label">Total Expenses</div>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="cyber-card text-center">
+      <div class="kpi-value {% if net_profit >= 0 %}glow-green{% else %}glow-red{% endif %}">R{{ net_profit|floatformat:0 }}</div>
+      <div class="kpi-label">Net Profit</div>
+    </div>
+  </div>
+</div>
+
+<!-- Status Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="cyber-card">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-tools me-3" style="font-size: 2rem; color: #ffd700;"></i>
+        <div>
+          <div class="kpi-value glow-yellow" style="font-size: 1.5rem;">{{ open_maintenance }}</div>
+          <div class="kpi-label">Open Maintenance</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="cyber-card">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-stars me-3" style="font-size: 2rem; color: #00d4ff;"></i>
+        <div>
+          <div class="kpi-value glow-cyan" style="font-size: 1.5rem;">{{ upcoming_cleaning }}</div>
+          <div class="kpi-label">Upcoming Cleanings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="cyber-card">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-hourglass-split me-3" style="font-size: 2rem; color: #ff8844;"></i>
+        <div>
+          <div class="kpi-value" style="font-size: 1.5rem; color: #ff8844;">{{ pending_payouts }}</div>
+          <div class="kpi-label">Pending Payouts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activity Tables -->
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="cyber-card">
+      <h5 class="mb-3" style="color: #00d4ff;"><i class="bi bi-arrow-down-circle"></i> Recent Income</h5>
+      <div class="table-responsive">
+        <table class="table table-cyber table-sm mb-0">
+          <thead><tr><th>Property</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for inc in recent_income %}
+            <tr>
+              <td><a href="{% url 'management:income' inc.property.pk %}" style="color: #00d4ff;">{{ inc.property.title|truncatechars:25 }}</a></td>
+              <td>{{ inc.get_income_type_display }}</td>
+              <td class="glow-green">R{{ inc.amount|floatformat:2 }}</td>
+              <td>{{ inc.date }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-muted text-center">No income records yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="cyber-card">
+      <h5 class="mb-3" style="color: #00d4ff;"><i class="bi bi-arrow-up-circle"></i> Recent Expenses</h5>
+      <div class="table-responsive">
+        <table class="table table-cyber table-sm mb-0">
+          <thead><tr><th>Property</th><th>Category</th><th>Amount</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for exp in recent_expenses %}
+            <tr>
+              <td><a href="{% url 'management:expenses' exp.property.pk %}" style="color: #00d4ff;">{{ exp.property.title|truncatechars:25 }}</a></td>
+              <td>{{ exp.get_category_display }}</td>
+              <td class="glow-red">R{{ exp.amount|floatformat:2 }}</td>
+              <td>{{ exp.date }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-muted text-center">No expense records yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-12">
+    <div class="cyber-card">
+      <h5 class="mb-3" style="color: #00d4ff;"><i class="bi bi-tools"></i> Recent Maintenance Requests</h5>
+      <div class="table-responsive">
+        <table class="table table-cyber table-sm mb-0">
+          <thead><tr><th>Title</th><th>Property</th><th>Priority</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for req in recent_maintenance %}
+            <tr>
+              <td>{{ req.title|truncatechars:30 }}</td>
+              <td>{{ req.property.title|truncatechars:25 }}</td>
+              <td>
+                <span class="badge {% if req.priority == 'urgent' %}bg-danger{% elif req.priority == 'high' %}bg-warning text-dark{% elif req.priority == 'medium' %}bg-info text-dark{% else %}bg-secondary{% endif %}">
+                  {{ req.get_priority_display }}
+                </span>
+              </td>
+              <td>
+                <span class="badge {% if req.status == 'open' %}badge-cyber{% elif req.status == 'in_progress' %}bg-warning text-dark{% elif req.status == 'completed' %}bg-success{% else %}bg-secondary{% endif %}">
+                  {{ req.get_status_display }}
+                </span>
+              </td>
+              <td>{{ req.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-muted text-center">No maintenance requests yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

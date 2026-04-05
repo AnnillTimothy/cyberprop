@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ property.title }} | CyberProp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .detail-hero {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+  }
+  .detail-hero img {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+  }
+  .gallery-thumb {
+    width: 100px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .gallery-thumb:hover, .gallery-thumb.active {
+    border-color: #00d4ff;
+    box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+  }
+  .detail-card {
+    background: #1a1a2e;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .detail-card h5 {
+    color: #00d4ff;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .stat-box {
+    text-align: center;
+    padding: 1rem;
+    background: #0a0a1a;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 212, 255, 0.1);
+  }
+  .stat-box i { color: #00d4ff; font-size: 1.5rem; }
+  .stat-box .stat-val { font-size: 1.25rem; font-weight: 700; color: #fff; }
+  .stat-box .stat-label { font-size: 0.75rem; color: #888; }
+  .price-big {
+    color: #00d4ff;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .amenity-tag {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    background: rgba(0, 212, 255, 0.08);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: #00d4ff;
+    margin: 0.25rem;
+  }
+  .badge-available {
+    background: rgba(0, 212, 255, 0.15);
+    color: #00d4ff;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+  }
+  .badge-featured {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+  }
+  .badge-type {
+    background: rgba(138, 43, 226, 0.15);
+    color: #bb86fc;
+    border: 1px solid rgba(138, 43, 226, 0.3);
+  }
+  .no-hero-image {
+    width: 100%;
+    height: 480px;
+    background: linear-gradient(135deg, #0a0a1a, #1a1a2e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 212, 255, 0.2);
+    font-size: 5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'properties:list' %}" class="btn btn-outline-secondary btn-sm mb-3">
+  <i class="bi bi-arrow-left"></i> Back to Properties
+</a>
+
+<!-- Hero Image & Gallery -->
+<div class="detail-hero mb-4" id="heroContainer">
+  {% if property.featured_image %}
+    <img src="{{ property.featured_image.url }}" alt="{{ property.title }}" id="heroImage">
+  {% elif images %}
+    <img src="{{ images.0.image.url }}" alt="{{ property.title }}" id="heroImage">
+  {% else %}
+    <div class="no-hero-image"><i class="bi bi-image"></i></div>
+  {% endif %}
+</div>
+
+{% if images %}
+<div class="d-flex gap-2 mb-4 flex-wrap">
+  {% if property.featured_image %}
+    <img src="{{ property.featured_image.url }}" class="gallery-thumb active" onclick="changeHero(this)" alt="Featured">
+  {% endif %}
+  {% for img in images %}
+    <img src="{{ img.image.url }}" class="gallery-thumb" onclick="changeHero(this)" alt="{{ img.caption|default:'Property image' }}">
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="row">
+  <!-- Main Content -->
+  <div class="col-lg-8">
+    <!-- Title & Badges -->
+    <div class="d-flex gap-2 mb-2 flex-wrap">
+      <span class="badge badge-type"><i class="bi bi-house-door"></i> {{ property.get_property_type_display }}</span>
+      {% if property.is_available %}
+        <span class="badge badge-available">Available</span>
+      {% endif %}
+      {% if property.is_featured %}
+        <span class="badge badge-featured"><i class="bi bi-star-fill"></i> Featured</span>
+      {% endif %}
+    </div>
+    <h2 class="mb-1">{{ property.title }}</h2>
+    <p class="text-muted mb-4"><i class="bi bi-geo-alt" style="color:#00d4ff"></i> {{ property.address }}, {{ property.city }}, {{ property.province }} {{ property.postal_code }}</p>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-3">
+        <div class="stat-box">
+          <i class="bi bi-door-open"></i>
+          <div class="stat-val">{{ property.bedrooms }}</div>
+          <div class="stat-label">Bedrooms</div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="stat-box">
+          <i class="bi bi-droplet"></i>
+          <div class="stat-val">{{ property.bathrooms }}</div>
+          <div class="stat-label">Bathrooms</div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="stat-box">
+          <i class="bi bi-car-front"></i>
+          <div class="stat-val">{{ property.parking_spaces }}</div>
+          <div class="stat-label">Parking</div>
+        </div>
+      </div>
+      {% if property.size_sqm %}
+      <div class="col-3">
+        <div class="stat-box">
+          <i class="bi bi-arrows-fullscreen"></i>
+          <div class="stat-val">{{ property.size_sqm }}</div>
+          <div class="stat-label">m²</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Description -->
+    <div class="detail-card mb-4">
+      <h5><i class="bi bi-text-paragraph"></i> Description</h5>
+      <p class="mb-0" style="white-space:pre-line">{{ property.description }}</p>
+    </div>
+
+    <!-- Amenities -->
+    {% if property.amenities %}
+    <div class="detail-card mb-4">
+      <h5><i class="bi bi-check2-circle"></i> Amenities</h5>
+      <div>
+        {% for amenity in property.get_amenities_list %}
+          <span class="amenity-tag">{{ amenity }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Sidebar -->
+  <div class="col-lg-4">
+    <!-- Pricing -->
+    <div class="detail-card mb-4">
+      <h5><i class="bi bi-currency-dollar"></i> Pricing</h5>
+      <div class="price-big mb-1">R{{ property.monthly_rent|floatformat:0 }}</div>
+      <p class="text-muted mb-2">per month</p>
+      {% if property.deposit %}
+        <p class="mb-0"><span class="text-muted">Deposit:</span> <strong>R{{ property.deposit|floatformat:0 }}</strong></p>
+      {% endif %}
+    </div>
+
+    <!-- Enquiry Form -->
+    <div class="detail-card mb-4">
+      <h5><i class="bi bi-envelope"></i> Send Enquiry</h5>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show py-2" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      <form method="post" action="{% url 'properties:enquiry' slug=property.slug %}">
+        {% csrf_token %}
+        {% for field in enquiry_form %}
+          <div class="mb-3">
+            {{ field }}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-outline-info w-100">
+          <i class="bi bi-send"></i> Send Enquiry
+        </button>
+      </form>
+    </div>
+
+    <!-- Booking Form -->
+    {% if property.is_available %}
+    <div class="detail-card mb-4">
+      <h5><i class="bi bi-calendar-event"></i> Book a Viewing</h5>
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'properties:book' slug=property.slug %}">
+          {% csrf_token %}
+          {% for field in booking_form %}
+            <div class="mb-3">
+              <label class="form-label small text-muted">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger small">{{ field.errors.0 }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-outline-info w-100">
+            <i class="bi bi-calendar-check"></i> Book Viewing
+          </button>
+        </form>
+      {% else %}
+        <p class="text-muted small mb-2">Please log in to book a viewing.</p>
+        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-outline-info w-100 btn-sm">
+          <i class="bi bi-box-arrow-in-right"></i> Login to Book
+        </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function changeHero(thumb) {
+    const hero = document.getElementById('heroImage');
+    if (hero) {
+      hero.src = thumb.src;
+    }
+    document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}Order {{ order.order_number }} — CyberProp Store{% endblock %}
+
+{% block extra_css %}
+<style>
+  .order-card {
+    background: linear-gradient(145deg, #1a1a2e, #0d0d1a);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .order-card h5 {
+    color: #00d4ff;
+    margin-bottom: 1.5rem;
+  }
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .items-table th {
+    background: rgba(0, 212, 255, 0.05);
+    color: #00d4ff;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.75rem 1rem;
+  }
+  .items-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+  }
+  .total-highlight {
+    color: #00d4ff;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+  }
+  .status-paid { color: #00d4ff; }
+  .status-pending { color: #ffc107; }
+  .status-shipped { color: #00ff88; }
+  .status-delivered { color: #28a745; }
+  .status-cancelled, .status-refunded { color: #ff4444; }
+  .status-processing { color: #17a2b8; }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'store:product_list' %}" class="text-info text-decoration-none">Store</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'store:order_history' %}" class="text-info text-decoration-none">Orders</a></li>
+    <li class="breadcrumb-item active text-secondary">{{ order.order_number }}</li>
+  </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="text-white mb-0">
+    <i class="bi bi-receipt text-info"></i> Order {{ order.order_number }}
+  </h3>
+  <span class="badge fs-6 status-{{ order.status }} border border-secondary px-3 py-2">
+    {{ order.get_status_display }}
+  </span>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="order-card">
+      <h5><i class="bi bi-box-seam"></i> Order Items</h5>
+      <table class="table table-dark mb-0 items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Size</th>
+            <th>Color</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order.items.all %}
+          <tr>
+            <td class="text-white">{{ item.product.name }}</td>
+            <td class="text-secondary">{{ item.size|default:"—" }}</td>
+            <td class="text-secondary">{{ item.color|default:"—" }}</td>
+            <td class="text-white">R{{ item.price }}</td>
+            <td class="text-white">{{ item.quantity }}</td>
+            <td class="text-info fw-bold">R{{ item.line_total }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="order-card mb-4">
+      <h5><i class="bi bi-cash-stack"></i> Payment</h5>
+      <div class="detail-row">
+        <span class="text-secondary">Subtotal</span>
+        <span class="text-white">R{{ order.subtotal }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="text-secondary">Shipping</span>
+        <span class="text-white">{% if order.shipping_cost == 0 %}FREE{% else %}R{{ order.shipping_cost }}{% endif %}</span>
+      </div>
+      <div class="detail-row">
+        <span class="text-white fw-bold">Total</span>
+        <span class="total-highlight">R{{ order.total }}</span>
+      </div>
+      {% if order.payment_id %}
+      <div class="detail-row">
+        <span class="text-secondary small">Payment ID</span>
+        <span class="text-secondary small">{{ order.payment_id }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="order-card">
+      <h5><i class="bi bi-truck"></i> Shipping</h5>
+      <div class="detail-row">
+        <span class="text-secondary">Name</span>
+        <span class="text-white">{{ order.shipping_name }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="text-secondary">Address</span>
+        <span class="text-white text-end" style="max-width: 60%;">{{ order.shipping_address }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="text-secondary">City</span>
+        <span class="text-white">{{ order.shipping_city }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="text-secondary">Postal Code</span>
+        <span class="text-white">{{ order.shipping_postal_code }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="text-secondary">Phone</span>
+        <span class="text-white">{{ order.shipping_phone }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <p class="text-secondary small">
+    <i class="bi bi-clock"></i> Order placed on {{ order.created_at|date:"d M Y, H:i" }}
+    {% if order.updated_at %}· Last updated {{ order.updated_at|date:"d M Y, H:i" }}{% endif %}
+  </p>
+</div>
+{% endblock %}

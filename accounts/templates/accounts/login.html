@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login - CyberProp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card bg-dark border-info shadow-lg mt-5">
+      <div class="card-body p-4">
+        <h2 class="text-center text-info mb-4">
+          <i class="bi bi-shield-lock"></i> Access Terminal
+        </h2>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-outline-info w-100 mt-3">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+          </button>
+        </form>
+
+        <p class="text-center mt-3 text-secondary">
+          No account? <a href="{% url 'accounts:register' %}" class="text-info">Register here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

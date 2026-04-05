@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}My Submissions | CyberProp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .submission-card {
+    background: #1a1a2e;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: border-color 0.3s;
+  }
+  .submission-card:hover {
+    border-color: rgba(0, 212, 255, 0.35);
+  }
+  .badge-pending {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+  }
+  .badge-approved {
+    background: rgba(0, 212, 255, 0.15);
+    color: #00d4ff;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+  }
+  .badge-rejected {
+    background: rgba(255, 82, 82, 0.15);
+    color: #ff5252;
+    border: 1px solid rgba(255, 82, 82, 0.3);
+  }
+  .sub-detail { color: #888; font-size: 0.85rem; }
+  .sub-detail i { color: #00d4ff; }
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+  .empty-state i { font-size: 3rem; color: rgba(0, 212, 255, 0.25); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0"><i class="bi bi-journal-text" style="color:#00d4ff"></i> My Submissions</h2>
+  <a href="{% url 'properties:submit' %}" class="btn btn-outline-info btn-sm">
+    <i class="bi bi-plus-circle"></i> New Submission
+  </a>
+</div>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+{% endif %}
+
+{% if submissions %}
+<div class="row g-3">
+  {% for sub in submissions %}
+  <div class="col-md-6 col-xl-4">
+    <div class="submission-card h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <h6 class="mb-0">{{ sub.title }}</h6>
+        {% if sub.status == 'pending' %}
+          <span class="badge badge-pending">Pending</span>
+        {% elif sub.status == 'approved' %}
+          <span class="badge badge-approved">Approved</span>
+        {% elif sub.status == 'rejected' %}
+          <span class="badge badge-rejected">Rejected</span>
+        {% endif %}
+      </div>
+      <div class="sub-detail mb-1"><i class="bi bi-house-door"></i> {{ sub.get_property_type_display }}</div>
+      <div class="sub-detail mb-1"><i class="bi bi-geo-alt"></i> {{ sub.city }}, {{ sub.province }}</div>
+      <div class="sub-detail mb-1"><i class="bi bi-cash"></i> Proposed Rent: <strong class="text-light">R{{ sub.proposed_rent|floatformat:0 }}</strong></div>
+      <div class="sub-detail mb-1"><i class="bi bi-door-open"></i> {{ sub.bedrooms }} Bed &middot; {{ sub.bathrooms }} Bath</div>
+      <div class="sub-detail"><i class="bi bi-clock"></i> Submitted {{ sub.created_at|date:"d M Y" }}</div>
+      {% if sub.admin_notes %}
+        <div class="mt-2 p-2 rounded" style="background:rgba(0,212,255,0.05); border:1px solid rgba(0,212,255,0.15);">
+          <small class="text-muted"><i class="bi bi-chat-left-text" style="color:#00d4ff"></i> Admin Notes:</small>
+          <p class="mb-0 small">{{ sub.admin_notes }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="bi bi-inbox"></i>
+  <p class="text-muted mt-3">You haven't submitted any properties yet.</p>
+  <a href="{% url 'properties:submit' %}" class="btn btn-outline-info">
+    <i class="bi bi-plus-circle"></i> Submit Your First Property
+  </a>
+</div>
+{% endif %}
+{% endblock %}

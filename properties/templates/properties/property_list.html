@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Properties | CyberProp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .property-card {
+    background: #1a1a2e;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .property-card:hover {
+    border-color: #00d4ff;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), 0 0 40px rgba(0, 212, 255, 0.05);
+    transform: translateY(-4px);
+  }
+  .property-card img {
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+  }
+  .property-card .card-body { padding: 1.25rem; }
+  .badge-available {
+    background: rgba(0, 212, 255, 0.15);
+    color: #00d4ff;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+  }
+  .badge-featured {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+  }
+  .badge-type {
+    background: rgba(138, 43, 226, 0.15);
+    color: #bb86fc;
+    border: 1px solid rgba(138, 43, 226, 0.3);
+  }
+  .price-tag {
+    color: #00d4ff;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  .filter-sidebar {
+    background: #1a1a2e;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .filter-sidebar h5 {
+    color: #00d4ff;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+    padding-bottom: 0.75rem;
+  }
+  .detail-icon { color: #00d4ff; }
+  .no-image-placeholder {
+    height: 220px;
+    background: linear-gradient(135deg, #0a0a1a, #1a1a2e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 212, 255, 0.3);
+    font-size: 3rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0"><i class="bi bi-building detail-icon"></i> Properties</h2>
+  {% if user.is_authenticated and user.is_property_owner %}
+    <a href="{% url 'properties:submit' %}" class="btn btn-outline-info">
+      <i class="bi bi-plus-circle"></i> Submit Property
+    </a>
+  {% endif %}
+</div>
+
+<div class="row">
+  <!-- Filter Sidebar -->
+  <div class="col-lg-3 mb-4">
+    <div class="filter-sidebar">
+      <h5><i class="bi bi-funnel"></i> Search &amp; Filter</h5>
+      <form method="get" action="{% url 'properties:list' %}">
+        <div class="mb-3">
+          <label class="form-label small text-muted">City</label>
+          {{ form.city }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label small text-muted">Property Type</label>
+          {{ form.property_type }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label small text-muted">Min Price (R)</label>
+          {{ form.min_price }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label small text-muted">Max Price (R)</label>
+          {{ form.max_price }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label small text-muted">Bedrooms</label>
+          {{ form.bedrooms }}
+        </div>
+        <button type="submit" class="btn btn-outline-info w-100">
+          <i class="bi bi-search"></i> Search
+        </button>
+        <a href="{% url 'properties:list' %}" class="btn btn-outline-secondary w-100 mt-2 btn-sm">Clear Filters</a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Property Grid -->
+  <div class="col-lg-9">
+    {% if properties %}
+    <div class="row g-4">
+      {% for prop in properties %}
+      <div class="col-md-6 col-xl-4">
+        <div class="property-card h-100 d-flex flex-column">
+          <a href="{% url 'properties:detail' slug=prop.slug %}" class="text-decoration-none">
+            {% if prop.featured_image %}
+              <img src="{{ prop.featured_image.url }}" alt="{{ prop.title }}">
+            {% else %}
+              <div class="no-image-placeholder">
+                <i class="bi bi-image"></i>
+              </div>
+            {% endif %}
+          </a>
+          <div class="card-body d-flex flex-column flex-grow-1">
+            <div class="d-flex gap-1 mb-2 flex-wrap">
+              <span class="badge badge-type"><i class="bi bi-house-door"></i> {{ prop.get_property_type_display }}</span>
+              {% if prop.is_available %}
+                <span class="badge badge-available">Available</span>
+              {% endif %}
+              {% if prop.is_featured %}
+                <span class="badge badge-featured"><i class="bi bi-star-fill"></i> Featured</span>
+              {% endif %}
+            </div>
+            <h6 class="mb-1">
+              <a href="{% url 'properties:detail' slug=prop.slug %}" class="text-decoration-none text-light">{{ prop.title }}</a>
+            </h6>
+            <p class="text-muted small mb-2"><i class="bi bi-geo-alt detail-icon"></i> {{ prop.city }}, {{ prop.province }}</p>
+            <div class="d-flex gap-3 text-muted small mb-3">
+              <span><i class="bi bi-door-open detail-icon"></i> {{ prop.bedrooms }} Bed</span>
+              <span><i class="bi bi-droplet detail-icon"></i> {{ prop.bathrooms }} Bath</span>
+              {% if prop.parking_spaces %}
+                <span><i class="bi bi-car-front detail-icon"></i> {{ prop.parking_spaces }}</span>
+              {% endif %}
+            </div>
+            <div class="mt-auto">
+              <span class="price-tag">R{{ prop.monthly_rent|floatformat:0 }}</span>
+              <span class="text-muted small">/month</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-building" style="font-size:3rem; color:rgba(0,212,255,0.3)"></i>
+      <p class="text-muted mt-3">No properties found matching your criteria.</p>
+      <a href="{% url 'properties:list' %}" class="btn btn-outline-info btn-sm">View All Properties</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

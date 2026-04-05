@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}My Orders — CyberProp Store{% endblock %}
+
+{% block extra_css %}
+<style>
+  .orders-table {
+    background: linear-gradient(145deg, #1a1a2e, #0d0d1a);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .orders-table th {
+    background: rgba(0, 212, 255, 0.05);
+    color: #00d4ff;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 1rem;
+  }
+  .orders-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+  }
+  .status-paid { color: #00d4ff; }
+  .status-pending { color: #ffc107; }
+  .status-shipped { color: #00ff88; }
+  .status-delivered { color: #28a745; }
+  .status-cancelled, .status-refunded { color: #ff4444; }
+  .status-processing { color: #17a2b8; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="text-white mb-0"><i class="bi bi-bag-check text-info"></i> My Orders</h3>
+  <a href="{% url 'store:product_list' %}" class="btn btn-outline-info btn-sm">
+    <i class="bi bi-bag-plus"></i> Continue Shopping
+  </a>
+</div>
+
+{% if orders %}
+<div class="orders-table">
+  <table class="table table-dark mb-0">
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td class="text-info fw-semibold">{{ order.order_number }}</td>
+        <td class="text-secondary">{{ order.created_at|date:"d M Y" }}</td>
+        <td class="text-white">{{ order.items.count }} item{{ order.items.count|pluralize }}</td>
+        <td class="text-white fw-bold">R{{ order.total }}</td>
+        <td>
+          <span class="status-{{ order.status }} fw-semibold text-capitalize">
+            {{ order.get_status_display }}
+          </span>
+        </td>
+        <td>
+          <a href="{% url 'store:order_detail' order.order_number %}" class="btn btn-outline-info btn-sm">
+            <i class="bi bi-eye"></i> View
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-5">
+  <div style="font-size: 4rem; color: rgba(0, 212, 255, 0.2);"><i class="bi bi-bag-x"></i></div>
+  <h5 class="text-secondary mt-3">No orders yet</h5>
+  <a href="{% url 'store:product_list' %}" class="btn btn-outline-info mt-3">
+    <i class="bi bi-bag-plus"></i> Start Shopping
+  </a>
+</div>
+{% endif %}
+{% endblock %}

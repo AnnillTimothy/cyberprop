@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile - CyberProp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card bg-dark border-info shadow-lg mt-4">
+      <div class="card-body p-4">
+        <h2 class="text-center text-info mb-4">
+          <i class="bi bi-person-circle"></i> User Profile
+        </h2>
+
+        <div class="text-center mb-4">
+          {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="Avatar"
+                 class="rounded-circle border border-info" width="120" height="120">
+          {% else %}
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle border border-info bg-dark"
+                 style="width:120px;height:120px;">
+              <i class="bi bi-person text-info" style="font-size:3rem;"></i>
+            </div>
+          {% endif %}
+          <p class="text-info mt-2 mb-0">{{ user.get_role_display }}</p>
+        </div>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-outline-info w-100 mt-3">
+            <i class="bi bi-save"></i> Update Profile
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

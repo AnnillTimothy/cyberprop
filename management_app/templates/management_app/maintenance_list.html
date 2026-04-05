@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Maintenance Requests - CyberProp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cyber-card {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .cyber-card:hover { border-color: rgba(0, 212, 255, 0.5); box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+  .glow-cyan { color: #00d4ff; text-shadow: 0 0 8px rgba(0, 212, 255, 0.3); }
+  .table-cyber { background: #0a0a1a; }
+  .table-cyber thead th { background: #1a1a2e; color: #00d4ff; border-bottom: 1px solid rgba(0, 212, 255, 0.3); font-size: 0.8rem; text-transform: uppercase; }
+  .table-cyber td { border-color: rgba(0, 212, 255, 0.1); color: #c0c8d8; }
+  .filter-btn {
+    color: #8892a4;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    background: transparent;
+    border-radius: 20px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    color: #00d4ff;
+    border-color: rgba(0, 212, 255, 0.5);
+    background: rgba(0, 212, 255, 0.05);
+  }
+  .btn-cyber {
+    background: linear-gradient(135deg, #00d4ff 0%, #0088aa 100%);
+    color: #0a0a1a;
+    border: none;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+  }
+  .btn-cyber:hover { box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); color: #0a0a1a; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-1" style="color: #00d4ff;"><i class="bi bi-tools"></i> Maintenance Requests</h2>
+    <small class="text-muted">Track and manage property maintenance</small>
+  </div>
+  <div>
+    <a href="{% url 'management:maintenance_create' %}" class="btn btn-cyber"><i class="bi bi-plus-lg"></i> New Request</a>
+    <a href="{% url 'management:overview' %}" class="btn btn-outline-secondary btn-sm ms-1"><i class="bi bi-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="mb-3">
+  <a href="{% url 'management:maintenance' %}" class="filter-btn {% if not status_filter %}active{% endif %}">All</a>
+  <a href="{% url 'management:maintenance' %}?status=open" class="filter-btn {% if status_filter == 'open' %}active{% endif %}">Open</a>
+  <a href="{% url 'management:maintenance' %}?status=in_progress" class="filter-btn {% if status_filter == 'in_progress' %}active{% endif %}">In Progress</a>
+  <a href="{% url 'management:maintenance' %}?status=completed" class="filter-btn {% if status_filter == 'completed' %}active{% endif %}">Completed</a>
+  <a href="{% url 'management:maintenance' %}?status=cancelled" class="filter-btn {% if status_filter == 'cancelled' %}active{% endif %}">Cancelled</a>
+</div>
+
+<div class="cyber-card">
+  <div class="table-responsive">
+    <table class="table table-cyber table-sm mb-0">
+      <thead>
+        <tr><th>Title</th><th>Property</th><th>Priority</th><th>Status</th><th>Reported By</th><th>Assigned To</th><th>Est. Cost</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for req in maintenance_requests %}
+        <tr>
+          <td>{{ req.title|truncatechars:35 }}</td>
+          <td>{{ req.property.title|truncatechars:25 }}</td>
+          <td>
+            <span class="badge {% if req.priority == 'urgent' %}bg-danger{% elif req.priority == 'high' %}bg-warning text-dark{% elif req.priority == 'medium' %}bg-info text-dark{% else %}bg-secondary{% endif %}">
+              {{ req.get_priority_display }}
+            </span>
+          </td>
+          <td>
+            <span class="badge {% if req.status == 'open' %}bg-primary{% elif req.status == 'in_progress' %}bg-warning text-dark{% elif req.status == 'completed' %}bg-success{% else %}bg-secondary{% endif %}">
+              {{ req.get_status_display }}
+            </span>
+          </td>
+          <td>{{ req.reported_by.username|default:"-" }}</td>
+          <td>{{ req.assigned_to|default:"-" }}</td>
+          <td>{% if req.estimated_cost %}R{{ req.estimated_cost|floatformat:2 }}{% else %}-{% endif %}</td>
+          <td>{{ req.created_at|date:"M d, Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-muted text-center py-3">No maintenance requests found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

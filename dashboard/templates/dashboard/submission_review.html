@@ -1,0 +1,40 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load crispy_forms_tags %}
+{% block dashboard_title %}Review Submission{% endblock %}
+{% block dashboard_content %}
+<h2 class="text-info mb-4"><i class="bi bi-clipboard-check"></i> Review: {{ submission.title }}</h2>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card bg-dark border-info mb-3" style="border-color:rgba(0,212,255,.3)!important">
+      <div class="card-header text-info">Property Details</div>
+      <div class="card-body">
+        <p><strong>Owner:</strong> {{ submission.owner.get_full_name|default:submission.owner.username }}</p>
+        <p><strong>Type:</strong> {{ submission.get_property_type_display }}</p>
+        <p><strong>Address:</strong> {{ submission.address }}, {{ submission.city }}, {{ submission.province }}</p>
+        <p><strong>Bedrooms:</strong> {{ submission.bedrooms }} | <strong>Bathrooms:</strong> {{ submission.bathrooms }}</p>
+        <p><strong>Proposed Rent:</strong> R{{ submission.proposed_rent }}</p>
+        <p><strong>Description:</strong><br>{{ submission.description }}</p>
+        {% if submission.notes %}<p><strong>Owner Notes:</strong><br>{{ submission.notes }}</p>{% endif %}
+        <p><strong>Current Status:</strong>
+          {% if submission.status == 'pending' %}<span class="badge bg-warning text-dark">Pending</span>
+          {% elif submission.status == 'approved' %}<span class="badge bg-success">Approved</span>
+          {% else %}<span class="badge bg-danger">Rejected</span>{% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card bg-dark border-info" style="border-color:rgba(0,212,255,.3)!important">
+      <div class="card-header text-info">Review Decision</div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-info mt-3">Submit Review</button>
+          <a href="{% url 'dashboard:submission_list' %}" class="btn btn-outline-secondary mt-3">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
