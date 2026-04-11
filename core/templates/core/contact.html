@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact — CyberProp{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/global.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Contact <span class="text-info">Us</span></h1>
+  <p class="text-muted mt-2">We'd love to hear from you</p>
+</div>
+
+<div class="container">
+  {% if messages %}
+  <div class="row justify-content-center mb-4">
+    <div class="col-lg-8">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="row g-5">
+    <!-- Contact Form -->
+    <div class="col-lg-7">
+      <div class="feature-card p-4">
+        <h4 class="fw-bold mb-4">Send us a <span class="text-info">Message</span></h4>
+        <form method="post" class="contact-form">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" class="form-control" id="subject" name="subject">
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-outline-info btn-lg">
+            <i class="bi bi-send"></i> Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="col-lg-5">
+      <div class="feature-card p-4 mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt text-info me-2"></i>Office Address</h5>
+        <p class="text-muted mb-0">
+          CyberProp Property Management<br>
+          Cape Town, Western Cape<br>
+          South Africa
+        </p>
+      </div>
+
+      <div class="feature-card p-4 mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-envelope text-info me-2"></i>Email</h5>
+        <p class="text-muted mb-0">info@cyberprop.co.za</p>
+      </div>
+
+      <div class="feature-card p-4 mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-telephone text-info me-2"></i>Phone</h5>
+        <p class="text-muted mb-0">+27 21 000 0000</p>
+      </div>
+
+      <div class="feature-card p-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-clock text-info me-2"></i>Business Hours</h5>
+        <p class="text-muted mb-1">Monday – Friday: 08:00 – 17:00</p>
+        <p class="text-muted mb-0">Saturday: 09:00 – 13:00</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
