@@ -29,14 +29,17 @@ def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip()
-        subject = request.POST.get('subject', '').strip()
         message_text = request.POST.get('message', '').strip()
+        from_homepage = request.POST.get('from_homepage')
 
         if name and email and message_text:
             messages.success(
                 request,
                 'Thank you for your message! We will get back to you shortly.',
             )
+            if from_homepage:
+                return redirect('core:home')
+            return redirect('core:contact')
         else:
             messages.error(request, 'Please fill in all required fields.')
 

@@ -9,74 +9,74 @@
 
 {% block content %}
 <div class="page-header">
-  <h1>About <span class="text-info">CyberProp</span></h1>
-  <p class="text-muted mt-2">Smart property management for the modern era</p>
+  <p class="eyebrow">Our Story</p>
+  <h1>About <span class="glow-text">CyberProp</span></h1>
+  <p class="text-muted mt-2">{{ settings.about_tagline }}</p>
 </div>
 
 <div class="container">
   <!-- Mission -->
-  <div class="row align-items-center mb-5">
-    <div class="col-lg-6">
-      <h2 class="section-title">Our <span class="text-info">Mission</span></h2>
-      <p class="text-muted" style="line-height:1.8;">
-        CyberProp was founded with a simple vision: to revolutionise property management in South Africa
-        through technology. We believe that managing properties should be transparent, efficient, and
-        accessible to everyone — from individual landlords to large-scale investors.
-      </p>
-      <p class="text-muted" style="line-height:1.8;">
-        Our platform combines decades of property management expertise with cutting-edge software
-        to deliver an experience that benefits tenants, property owners, and investors alike.
-      </p>
+  <div class="row align-items-center mb-5 g-5">
+    <div class="col-lg-6 fade-up">
+      <p class="eyebrow">{{ settings.about_mission_title }}</p>
+      <h2 class="section-title">{{ settings.about_mission_title }} <span class="glow-text">.</span></h2>
+      <hr class="section-divider">
+      <p class="text-muted" style="line-height:1.85;">{{ settings.about_mission_text }}</p>
+      {% if settings.about_mission_text_2 %}
+      <p class="text-muted" style="line-height:1.85;">{{ settings.about_mission_text_2 }}</p>
+      {% endif %}
     </div>
-    <div class="col-lg-6 text-center">
-      <div class="stat-card p-5">
+    <div class="col-lg-6 fade-up">
+      <div class="about-visual">
         <i class="bi bi-building text-info" style="font-size: 4rem;"></i>
-        <h3 class="mt-3 fw-bold">Est. 2024</h3>
-        <p class="text-muted mb-0">Cape Town, South Africa</p>
+        <h3 class="mt-3">{{ settings.about_established }}</h3>
+        <p class="text-muted mb-0">{{ settings.about_location }}</p>
       </div>
     </div>
   </div>
 
   <!-- Values -->
-  <section class="section-padding">
+  <div style="padding: 4rem 0;">
     <div class="text-center mb-5">
-      <h2 class="section-title">Our <span class="text-info">Values</span></h2>
+      <p class="eyebrow">What Drives Us</p>
+      <h2 class="section-title">Our <span class="glow-text">Values</span></h2>
     </div>
     <div class="row g-4">
-      <div class="col-md-4">
+      <div class="col-md-4 fade-up">
         <div class="feature-card text-center h-100">
           <div class="feature-icon"><i class="bi bi-eye"></i></div>
-          <h5 class="fw-bold mb-3">Transparency</h5>
+          <h5 class="fw-semibold mb-3">Transparency</h5>
           <p class="text-muted">Full visibility into financials, maintenance, and property performance. No hidden fees, no surprises.</p>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-4 fade-up">
         <div class="feature-card text-center h-100">
           <div class="feature-icon"><i class="bi bi-lightning-charge"></i></div>
-          <h5 class="fw-bold mb-3">Innovation</h5>
+          <h5 class="fw-semibold mb-3">Innovation</h5>
           <p class="text-muted">Leveraging the latest technology to streamline processes and deliver exceptional service.</p>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-4 fade-up">
         <div class="feature-card text-center h-100">
           <div class="feature-icon"><i class="bi bi-people"></i></div>
-          <h5 class="fw-bold mb-3">Community</h5>
+          <h5 class="fw-semibold mb-3">Community</h5>
           <p class="text-muted">Building lasting relationships with tenants, owners, and partners through trust and reliability.</p>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- Services -->
-  <section class="section-padding">
+  <div style="padding: 4rem 0;">
     <div class="text-center mb-5">
-      <h2 class="section-title">What We <span class="text-info">Offer</span></h2>
+      <p class="eyebrow">What We Do</p>
+      <h2 class="section-title">What We <span class="glow-text">Offer</span></h2>
     </div>
     <div class="row g-4">
-      <div class="col-md-6">
+      <div class="col-md-6 fade-up">
         <div class="feature-card h-100">
-          <h5 class="fw-bold mb-3"><i class="bi bi-house-door text-info me-2"></i>Property Management</h5>
-          <ul class="text-muted" style="line-height: 2;">
+          <h5 class="fw-semibold mb-3"><i class="bi bi-house-door text-info me-2"></i>Property Management</h5>
+          <ul class="text-muted" style="line-height: 2.2;">
             <li>Tenant screening and placement</li>
             <li>Rent collection and accounting</li>
             <li>Property inspections and maintenance</li>
@@ -84,10 +84,10 @@
           </ul>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6 fade-up">
         <div class="feature-card h-100">
-          <h5 class="fw-bold mb-3"><i class="bi bi-graph-up text-info me-2"></i>Investor Services</h5>
-          <ul class="text-muted" style="line-height: 2;">
+          <h5 class="fw-semibold mb-3"><i class="bi bi-graph-up text-info me-2"></i>Investor Services</h5>
+          <ul class="text-muted" style="line-height: 2.2;">
             <li>Real-time financial dashboards</li>
             <li>Monthly payout processing</li>
             <li>Performance analytics and reports</li>
@@ -96,6 +96,13 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8os0V2s26icpHNpDaz0dLcYq+yR2hB/9Rjam7eFBMdSqO2vUPmFnz0Lz0cIBTO3OQEe0KyFkmXx==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{% static 'js/gsap-animations.js' %}"></script>
+{% endblock %}
+

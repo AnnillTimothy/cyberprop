@@ -6,71 +6,8 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/global.css' %}">
 <style>
-  /* ---- Homepage-specific overrides ---- */
+  /* Homepage: remove default main container padding so sections go edge-to-edge */
   main { padding: 0 !important; overflow-x: hidden; }
-
-  /* HERO */
-  .hero-section {
-    position: relative; min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-    background: linear-gradient(135deg, #0a0e17 0%, #0d1b2a 50%, #0a0e17 100%);
-  }
-  .hero-section::before {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(circle at 20% 50%, rgba(0,229,255,.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(0,229,255,.05) 0%, transparent 40%),
-      radial-gradient(circle at 60% 80%, rgba(0,124,145,.06) 0%, transparent 45%);
-    pointer-events: none;
-  }
-  .hero-content { position: relative; z-index: 2; text-align: center; max-width: 860px; padding: 2rem; }
-  .hero-title { font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 900; line-height: 1.08; margin-bottom: 1.5rem; }
-  .hero-title .word { display: inline-block; overflow: hidden; }
-  .hero-title .char { display: inline-block; }
-  .hero-subtitle { font-size: clamp(1rem, 2vw, 1.3rem); color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.7; max-width: 640px; margin-left: auto; margin-right: auto; }
-  .hero-scroll-hint { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .4rem; color: var(--cyan-dim); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; opacity: 0; }
-  .hero-scroll-hint .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, transparent, var(--cyan)); animation: scrollPulse 2s ease-in-out infinite; }
-  @keyframes scrollPulse { 0%,100%{opacity:.3; transform: scaleY(1)} 50%{opacity:1; transform: scaleY(1.15)} }
-
-  /* Floating grid background */
-  .grid-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,229,255,.03) 1px,transparent 1px), linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px); background-size: 60px 60px; pointer-events: none; }
-
-  /* STATS BAND */
-  .stats-section { background: var(--card-bg); border-top: 1px solid var(--cyan-dim); border-bottom: 1px solid var(--cyan-dim); padding: 4rem 0; }
-  .stat-item { text-align: center; }
-  .stat-number { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; color: var(--cyan); line-height: 1; }
-  .stat-label { color: var(--text-muted); margin-top: .5rem; font-size: .95rem; }
-
-  /* ABOUT PARALLAX */
-  .about-section { position: relative; padding: 7rem 0; overflow: hidden; }
-  .about-bg-layer { position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 50%, rgba(0,229,255,.06) 0%, transparent 60%); pointer-events: none; }
-  .about-eyebrow { font-size: .8rem; letter-spacing: .18em; text-transform: uppercase; color: var(--cyan); margin-bottom: 1rem; }
-  .about-title { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.5rem; }
-  .about-body { color: var(--text-muted); line-height: 1.85; font-size: 1.05rem; }
-  .about-badge { background: var(--card-bg); border: 1px solid var(--cyan-dim); border-radius: 16px; padding: 2.5rem; text-align: center; }
-
-  /* SERVICES */
-  .services-section { padding: 7rem 0; }
-  .services-eyebrow { font-size: .8rem; letter-spacing: .18em; text-transform: uppercase; color: var(--cyan); }
-  .service-card { background: var(--card-bg); border: 1px solid transparent; border-radius: 14px; padding: 2rem; transition: border-color .3s, box-shadow .3s; height: 100%; }
-  .service-card:hover { border-color: var(--cyan-dim); box-shadow: 0 4px 30px rgba(0,229,255,.1); }
-  .service-icon { font-size: 2.2rem; color: var(--cyan); margin-bottom: 1rem; }
-
-  /* PROPERTIES STRIP */
-  .properties-section { padding: 7rem 0; background: linear-gradient(180deg, transparent, rgba(0,229,255,.02), transparent); }
-  .prop-card-wrap { opacity: 0; }
-
-  /* CONTACT SECTION */
-  .contact-section { padding: 7rem 0; background: var(--card-bg); border-top: 1px solid var(--cyan-dim); }
-  .contact-info-item { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.8rem; }
-  .contact-info-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(0,229,255,.1); border: 1px solid var(--cyan-dim); display: flex; align-items: center; justify-content: center; color: var(--cyan); font-size: 1.2rem; flex-shrink: 0; }
-  .contact-info-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--cyan-dim); margin-bottom: .2rem; }
-  .contact-info-value { color: var(--text-primary); line-height: 1.5; }
-
-  /* CTA BAND */
-  .cta-band { padding: 6rem 0; text-align: center; background: linear-gradient(135deg, #0a0e17 0%, #0d1b2a 100%); border-top: 1px solid var(--cyan-dim); }
 </style>
 {% endblock %}
 
@@ -95,11 +32,35 @@
       </a>
     </div>
   </div>
-  <div class="hero-scroll-hint" id="scrollHint">
+  <div class="hero-border"></div>
+  <div class="scroll-cue" id="scrollCue">
     <span>Scroll</span>
-    <div class="scroll-line"></div>
+    <div class="scroll-cue-line"></div>
   </div>
 </section>
+
+<!-- ============================================================ MARQUEE -->
+<div class="marquee-band">
+  <div class="marquee-inner">
+    <span class="marquee-item"><i class="bi bi-building"></i>Property Management</span>
+    <span class="marquee-item"><i class="bi bi-graph-up-arrow"></i>Investor Services</span>
+    <span class="marquee-item"><i class="bi bi-tools"></i>Maintenance</span>
+    <span class="marquee-item"><i class="bi bi-calendar-check"></i>Online Bookings</span>
+    <span class="marquee-item"><i class="bi bi-credit-card-2-front"></i>Secure Payments</span>
+    <span class="marquee-item"><i class="bi bi-house-door"></i>Cape Town &amp; Beyond</span>
+    <span class="marquee-item"><i class="bi bi-shield-check"></i>Trusted Management</span>
+    <span class="marquee-item"><i class="bi bi-people"></i>500+ Happy Tenants</span>
+    <!-- Duplicate for seamless loop -->
+    <span class="marquee-item"><i class="bi bi-building"></i>Property Management</span>
+    <span class="marquee-item"><i class="bi bi-graph-up-arrow"></i>Investor Services</span>
+    <span class="marquee-item"><i class="bi bi-tools"></i>Maintenance</span>
+    <span class="marquee-item"><i class="bi bi-calendar-check"></i>Online Bookings</span>
+    <span class="marquee-item"><i class="bi bi-credit-card-2-front"></i>Secure Payments</span>
+    <span class="marquee-item"><i class="bi bi-house-door"></i>Cape Town &amp; Beyond</span>
+    <span class="marquee-item"><i class="bi bi-shield-check"></i>Trusted Management</span>
+    <span class="marquee-item"><i class="bi bi-people"></i>500+ Happy Tenants</span>
+  </div>
+</div>
 
 <!-- ============================================================== STATS -->
 <section class="stats-section" id="statsSection">
@@ -183,7 +144,7 @@
 <section class="services-section" id="servicesSection">
   <div class="container">
     <div class="text-center mb-5">
-      <p class="services-eyebrow">What We Do</p>
+      <p class="eyebrow">What We Do</p>
       <h2 class="section-title">Why <span class="glow-text">CyberProp</span>?</h2>
       <p class="text-muted">Comprehensive property management powered by technology</p>
     </div>
@@ -239,50 +200,46 @@
 <section class="properties-section" id="propertiesSection">
   <div class="container">
     <div class="text-center mb-5">
-      <p class="services-eyebrow">Handpicked For You</p>
+      <p class="eyebrow">Handpicked For You</p>
       <h2 class="section-title">Featured <span class="glow-text">Properties</span></h2>
     </div>
-    <div class="row g-4">
-      {% for property in featured_properties %}
-      <div class="col-md-4 prop-card-wrap">
-        <div class="property-card card h-100">
+  </div>
+  <!-- Full-width horizontal drag strip -->
+  <div class="container-fluid px-4">
+    <div class="props-track-wrap">
+      <div class="props-track">
+        {% for property in featured_properties %}
+        <div class="prop-slide">
           <div class="position-relative">
             {% if property.featured_image %}
-            <img src="{{ property.featured_image.url }}" class="card-img-top" alt="{{ property.title }}">
+            <img src="{{ property.featured_image.url }}" class="prop-slide-img" alt="{{ property.title }}">
             {% else %}
-            <div class="card-img-top bg-dark d-flex align-items-center justify-content-center" style="height:200px;">
-              <i class="bi bi-building text-info" style="font-size:3rem;"></i>
-            </div>
+            <div class="prop-slide-placeholder"><i class="bi bi-building"></i></div>
             {% endif %}
             <span class="badge-rent">R{{ property.monthly_rent|floatformat:0 }}/mo</span>
           </div>
-          <div class="card-body">
-            <h5 class="card-title fw-bold">{{ property.title }}</h5>
-            <p class="text-muted small mb-2">
-              <i class="bi bi-geo-alt"></i> {{ property.city }}, {{ property.province }}
-            </p>
-            <div class="d-flex gap-3 text-muted small">
-              <span><i class="bi bi-door-open"></i> {{ property.bedrooms }} Bed</span>
-              <span><i class="bi bi-droplet"></i> {{ property.bathrooms }} Bath</span>
-              {% if property.parking_spaces %}
-              <span><i class="bi bi-car-front"></i> {{ property.parking_spaces }} Park</span>
-              {% endif %}
+          <div class="prop-slide-body">
+            <div class="prop-slide-price">R{{ property.monthly_rent|floatformat:0 }}<span style="font-family:'Inter',sans-serif;font-size:.9rem;color:var(--text-muted)">/mo</span></div>
+            <div class="prop-slide-title">{{ property.title }}</div>
+            <div class="prop-slide-loc"><i class="bi bi-geo-alt me-1"></i>{{ property.city }}, {{ property.province }}</div>
+            <div class="prop-slide-stats">
+              <span><i class="bi bi-door-open me-1"></i>{{ property.bedrooms }} Bed</span>
+              <span><i class="bi bi-droplet me-1"></i>{{ property.bathrooms }} Bath</span>
+              {% if property.parking_spaces %}<span><i class="bi bi-car-front me-1"></i>{{ property.parking_spaces }}</span>{% endif %}
             </div>
           </div>
-          <div class="card-footer bg-transparent border-top border-secondary">
-            <a href="{% url 'properties:detail' property.slug %}" class="btn btn-outline-info btn-sm w-100">
-              View Details
-            </a>
+          <div class="prop-slide-footer">
+            <a href="{% url 'properties:detail' property.slug %}" class="btn btn-outline-info btn-sm w-100">View Details</a>
           </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-    <div class="text-center mt-5">
-      <a href="{% url 'properties:list' %}" class="btn btn-outline-info btn-lg">
-        View All Properties <i class="bi bi-arrow-right"></i>
-      </a>
-    </div>
+  </div>
+  <div class="text-center mt-5">
+    <a href="{% url 'properties:list' %}" class="btn btn-outline-info btn-lg">
+      View All Properties <i class="bi bi-arrow-right"></i>
+    </a>
   </div>
 </section>
 {% endif %}
@@ -291,7 +248,7 @@
 <section class="contact-section" id="contact">
   <div class="container">
     <div class="text-center mb-5">
-      <p class="services-eyebrow">Get In Touch</p>
+      <p class="eyebrow">Get In Touch</p>
       <h2 class="section-title">Contact <span class="glow-text">Us</span></h2>
       <p class="text-muted">We'd love to hear from you</p>
     </div>
@@ -347,33 +304,35 @@
 
       <!-- Form side -->
       <div class="col-lg-7" id="contactFormCol">
-        <form method="post" action="{% url 'core:contact' %}" class="contact-form">
-          {% csrf_token %}
-          <input type="hidden" name="from_homepage" value="1">
-          <div class="row g-3">
-            <div class="col-sm-6">
-              <label class="form-label small text-muted">Full Name *</label>
-              <input type="text" class="form-control" name="name" required>
+        <div class="contact-form-box">
+          <form method="post" action="{% url 'core:contact' %}" class="contact-form">
+            {% csrf_token %}
+            <input type="hidden" name="from_homepage" value="1">
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Full Name *</label>
+                <input type="text" class="form-control" name="name" required>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Email Address *</label>
+                <input type="email" class="form-control" name="email" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label small text-muted">Subject</label>
+                <input type="text" class="form-control" name="subject">
+              </div>
+              <div class="col-12">
+                <label class="form-label small text-muted">Message *</label>
+                <textarea class="form-control" name="message" rows="5" required></textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-outline-info btn-lg">
+                  <i class="bi bi-send"></i> Send Message
+                </button>
+              </div>
             </div>
-            <div class="col-sm-6">
-              <label class="form-label small text-muted">Email Address *</label>
-              <input type="email" class="form-control" name="email" required>
-            </div>
-            <div class="col-12">
-              <label class="form-label small text-muted">Subject</label>
-              <input type="text" class="form-control" name="subject">
-            </div>
-            <div class="col-12">
-              <label class="form-label small text-muted">Message *</label>
-              <textarea class="form-control" name="message" rows="5" required></textarea>
-            </div>
-            <div class="col-12">
-              <button type="submit" class="btn btn-outline-info btn-lg">
-                <i class="bi bi-send"></i> Send Message
-              </button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>
