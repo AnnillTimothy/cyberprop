@@ -5,194 +5,360 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/global.css' %}">
+<style>
+  /* Homepage: remove default main container padding so sections go edge-to-edge */
+  main { padding: 0 !important; overflow-x: hidden; }
+</style>
 {% endblock %}
 
 {% block main_class %}{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-  <div class="grid-lines"></div>
+
+<!-- ================================================================ HERO -->
+<section class="hero-section" id="hero">
+  <div class="grid-lines" id="gridLines"></div>
   <div class="hero-content">
-    <h1 class="hero-title">
-      Next-Gen <span class="glow-text">Property Management</span>
+    <h1 class="hero-title" id="heroTitle">
+      Next-Gen <span class="glow-text">Property</span> Management
     </h1>
-    <p class="hero-subtitle">
-      CyberProp combines cutting-edge technology with expert property management
-      to deliver seamless experiences for tenants, owners, and investors.
-    </p>
-    <div class="hero-cta">
-      <a href="{% url 'properties:property_list' %}" class="btn btn-outline-info btn-lg me-3">
+    <p class="hero-subtitle" id="heroSubtitle">{{ settings.hero_subtitle }}</p>
+    <div class="hero-cta" id="heroCta">
+      <a href="{% url 'properties:list' %}" class="btn btn-outline-info btn-lg me-3">
         <i class="bi bi-search"></i> Browse Properties
       </a>
-      <a href="{% url 'core:about' %}" class="btn btn-outline-light btn-lg">
-        Learn More <i class="bi bi-arrow-right"></i>
+      <a href="#contact" class="btn btn-outline-light btn-lg">
+        <i class="bi bi-envelope"></i> Contact Us
       </a>
     </div>
   </div>
+  <div class="hero-border"></div>
+  <div class="scroll-cue" id="scrollCue">
+    <span>Scroll</span>
+    <div class="scroll-cue-line"></div>
+  </div>
 </section>
 
-<!-- Stats Section -->
-<section class="section-padding">
+<!-- ============================================================ MARQUEE -->
+<div class="marquee-band">
+  <div class="marquee-inner">
+    <span class="marquee-item"><i class="bi bi-building"></i>Property Management</span>
+    <span class="marquee-item"><i class="bi bi-graph-up-arrow"></i>Investor Services</span>
+    <span class="marquee-item"><i class="bi bi-tools"></i>Maintenance</span>
+    <span class="marquee-item"><i class="bi bi-calendar-check"></i>Online Bookings</span>
+    <span class="marquee-item"><i class="bi bi-credit-card-2-front"></i>Secure Payments</span>
+    <span class="marquee-item"><i class="bi bi-house-door"></i>Cape Town &amp; Beyond</span>
+    <span class="marquee-item"><i class="bi bi-shield-check"></i>Trusted Management</span>
+    <span class="marquee-item"><i class="bi bi-people"></i>500+ Happy Tenants</span>
+    <!-- Duplicate for seamless loop -->
+    <span class="marquee-item"><i class="bi bi-building"></i>Property Management</span>
+    <span class="marquee-item"><i class="bi bi-graph-up-arrow"></i>Investor Services</span>
+    <span class="marquee-item"><i class="bi bi-tools"></i>Maintenance</span>
+    <span class="marquee-item"><i class="bi bi-calendar-check"></i>Online Bookings</span>
+    <span class="marquee-item"><i class="bi bi-credit-card-2-front"></i>Secure Payments</span>
+    <span class="marquee-item"><i class="bi bi-house-door"></i>Cape Town &amp; Beyond</span>
+    <span class="marquee-item"><i class="bi bi-shield-check"></i>Trusted Management</span>
+    <span class="marquee-item"><i class="bi bi-people"></i>500+ Happy Tenants</span>
+  </div>
+</div>
+
+<!-- ============================================================== STATS -->
+<section class="stats-section" id="statsSection">
   <div class="container">
-    <div class="row g-4">
-      <div class="col-md-3 col-6">
-        <div class="stat-card">
-          <div class="stat-number">150+</div>
-          <div class="text-muted mt-2">Properties Managed</div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number" data-target="{{ settings.stat_properties }}">0</div>
+          <div class="stat-label">{{ settings.stat_properties_label }}</div>
         </div>
       </div>
-      <div class="col-md-3 col-6">
-        <div class="stat-card">
-          <div class="stat-number">500+</div>
-          <div class="text-muted mt-2">Happy Tenants</div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number" data-target="{{ settings.stat_tenants }}">0</div>
+          <div class="stat-label">{{ settings.stat_tenants_label }}</div>
         </div>
       </div>
-      <div class="col-md-3 col-6">
-        <div class="stat-card">
-          <div class="stat-number">98%</div>
-          <div class="text-muted mt-2">Occupancy Rate</div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number" data-target="{{ settings.stat_occupancy }}">0</div>
+          <div class="stat-label">{{ settings.stat_occupancy_label }}</div>
         </div>
       </div>
-      <div class="col-md-3 col-6">
-        <div class="stat-card">
-          <div class="stat-number">R50M+</div>
-          <div class="text-muted mt-2">Portfolio Value</div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number" data-target="{{ settings.stat_portfolio }}">0</div>
+          <div class="stat-label">{{ settings.stat_portfolio_label }}</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Features Section -->
-<section class="section-padding" style="background: linear-gradient(180deg, transparent, rgba(0,229,255,0.02), transparent);">
+<!-- ============================================================= ABOUT -->
+<section class="about-section" id="aboutSection">
+  <div class="about-bg-layer"></div>
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 about-text-col">
+        <p class="about-eyebrow">About CyberProp</p>
+        <h2 class="about-title">{{ settings.about_mission_title }} <span class="glow-text">.</span></h2>
+        <p class="about-body mb-3">{{ settings.about_mission_text }}</p>
+        {% if settings.about_mission_text_2 %}
+          <p class="about-body mb-4">{{ settings.about_mission_text_2 }}</p>
+        {% endif %}
+        <a href="{% url 'core:about' %}" class="btn btn-outline-info">Learn More <i class="bi bi-arrow-right"></i></a>
+      </div>
+      <div class="col-lg-6 about-visual-col">
+        <div class="about-badge">
+          <i class="bi bi-building text-info" style="font-size:4rem;"></i>
+          <h3 class="mt-3 fw-bold">{{ settings.about_established }}</h3>
+          <p class="text-muted mb-0">{{ settings.about_location }}</p>
+        </div>
+        <!-- Values row -->
+        <div class="row g-3 mt-3">
+          <div class="col-4">
+            <div class="about-badge">
+              <i class="bi bi-eye text-info fs-4"></i>
+              <p class="mb-0 small mt-2 text-muted">Transparency</p>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="about-badge">
+              <i class="bi bi-lightning-charge text-info fs-4"></i>
+              <p class="mb-0 small mt-2 text-muted">Innovation</p>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="about-badge">
+              <i class="bi bi-people text-info fs-4"></i>
+              <p class="mb-0 small mt-2 text-muted">Community</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== SERVICES -->
+<section class="services-section" id="servicesSection">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="section-title">Why <span class="text-info">CyberProp</span>?</h2>
+      <p class="eyebrow">What We Do</p>
+      <h2 class="section-title">Why <span class="glow-text">CyberProp</span>?</h2>
       <p class="text-muted">Comprehensive property management powered by technology</p>
     </div>
-    <div class="row g-4">
+    <div class="row g-4" id="serviceCards">
       <div class="col-md-4">
-        <div class="feature-card text-center h-100">
-          <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
-          <h5 class="fw-bold mb-3">Trusted Management</h5>
-          <p class="text-muted">Professional property management with transparent reporting, regular inspections, and dedicated support for owners and tenants.</p>
+        <div class="service-card">
+          <div class="service-icon"><i class="bi bi-shield-check"></i></div>
+          <h5 class="fw-bold mb-2">Trusted Management</h5>
+          <p class="text-muted mb-0">Professional management with transparent reporting, regular inspections, and dedicated support.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="feature-card text-center h-100">
-          <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
-          <h5 class="fw-bold mb-3">Investor Dashboard</h5>
-          <p class="text-muted">Real-time financial tracking, income & expense reports, and automated investor payouts with complete visibility.</p>
+        <div class="service-card">
+          <div class="service-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <h5 class="fw-bold mb-2">Investor Dashboard</h5>
+          <p class="text-muted mb-0">Real-time financial tracking, income &amp; expense reports, and automated investor payouts.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="feature-card text-center h-100">
-          <div class="feature-icon"><i class="bi bi-tools"></i></div>
-          <h5 class="fw-bold mb-3">Maintenance Portal</h5>
-          <p class="text-muted">Submit and track maintenance requests with priority handling, contractor assignment, and cost management.</p>
+        <div class="service-card">
+          <div class="service-icon"><i class="bi bi-tools"></i></div>
+          <h5 class="fw-bold mb-2">Maintenance Portal</h5>
+          <p class="text-muted mb-0">Submit and track maintenance requests with priority handling and contractor assignment.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="feature-card text-center h-100">
-          <div class="feature-icon"><i class="bi bi-calendar-check"></i></div>
-          <h5 class="fw-bold mb-3">Online Bookings</h5>
-          <p class="text-muted">Schedule property viewings online with instant confirmation and calendar integration for seamless scheduling.</p>
+        <div class="service-card">
+          <div class="service-icon"><i class="bi bi-calendar-check"></i></div>
+          <h5 class="fw-bold mb-2">Online Bookings</h5>
+          <p class="text-muted mb-0">Schedule property viewings online with instant confirmation and calendar integration.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="feature-card text-center h-100">
-          <div class="feature-icon"><i class="bi bi-credit-card-2-front"></i></div>
-          <h5 class="fw-bold mb-3">Secure Payments</h5>
-          <p class="text-muted">Integrated PayFast payment processing for rent, deposits, and merchandise purchases with full transaction history.</p>
+        <div class="service-card">
+          <div class="service-icon"><i class="bi bi-credit-card-2-front"></i></div>
+          <h5 class="fw-bold mb-2">Secure Payments</h5>
+          <p class="text-muted mb-0">Integrated PayFast processing for rent, deposits, and merchandise with full transaction history.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="feature-card text-center h-100">
-          <div class="feature-icon"><i class="bi bi-bag-check"></i></div>
-          <h5 class="fw-bold mb-3">Merch Store</h5>
-          <p class="text-muted">Browse and shop our exclusive CyberProp merchandise with secure checkout and order tracking.</p>
+        <div class="service-card">
+          <div class="service-icon"><i class="bi bi-bag-check"></i></div>
+          <h5 class="fw-bold mb-2">Merch Store</h5>
+          <p class="text-muted mb-0">Browse and shop exclusive CyberProp merchandise with secure checkout and order tracking.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Featured Properties -->
+<!-- ======================================================== PROPERTIES -->
 {% if featured_properties %}
-<section class="section-padding">
+<section class="properties-section" id="propertiesSection">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="section-title">Featured <span class="text-info">Properties</span></h2>
-      <p class="text-muted">Handpicked properties for you</p>
+      <p class="eyebrow">Handpicked For You</p>
+      <h2 class="section-title">Featured <span class="glow-text">Properties</span></h2>
     </div>
-    <div class="row g-4">
-      {% for property in featured_properties %}
-      <div class="col-md-4">
-        <div class="property-card card h-100">
+  </div>
+  <!-- Full-width horizontal drag strip -->
+  <div class="container-fluid px-4">
+    <div class="props-track-wrap">
+      <div class="props-track">
+        {% for property in featured_properties %}
+        <div class="prop-slide">
           <div class="position-relative">
             {% if property.featured_image %}
-            <img src="{{ property.featured_image.url }}" class="card-img-top" alt="{{ property.title }}">
+            <img src="{{ property.featured_image.url }}" class="prop-slide-img" alt="{{ property.title }}">
             {% else %}
-            <div class="card-img-top bg-dark d-flex align-items-center justify-content-center" style="height:200px;">
-              <i class="bi bi-building text-info" style="font-size:3rem;"></i>
-            </div>
+            <div class="prop-slide-placeholder"><i class="bi bi-building"></i></div>
             {% endif %}
             <span class="badge-rent">R{{ property.monthly_rent|floatformat:0 }}/mo</span>
           </div>
-          <div class="card-body">
-            <h5 class="card-title fw-bold">{{ property.title }}</h5>
-            <p class="text-muted small mb-2">
-              <i class="bi bi-geo-alt"></i> {{ property.city }}, {{ property.province }}
-            </p>
-            <div class="d-flex gap-3 text-muted small">
-              <span><i class="bi bi-door-open"></i> {{ property.bedrooms }} Bed</span>
-              <span><i class="bi bi-droplet"></i> {{ property.bathrooms }} Bath</span>
-              {% if property.parking %}
-              <span><i class="bi bi-car-front"></i> {{ property.parking }} Park</span>
-              {% endif %}
+          <div class="prop-slide-body">
+            <div class="prop-slide-price">R{{ property.monthly_rent|floatformat:0 }}<span style="font-family:'Inter',sans-serif;font-size:.9rem;color:var(--text-muted)">/mo</span></div>
+            <div class="prop-slide-title">{{ property.title }}</div>
+            <div class="prop-slide-loc"><i class="bi bi-geo-alt me-1"></i>{{ property.city }}, {{ property.province }}</div>
+            <div class="prop-slide-stats">
+              <span><i class="bi bi-door-open me-1"></i>{{ property.bedrooms }} Bed</span>
+              <span><i class="bi bi-droplet me-1"></i>{{ property.bathrooms }} Bath</span>
+              {% if property.parking_spaces %}<span><i class="bi bi-car-front me-1"></i>{{ property.parking_spaces }}</span>{% endif %}
             </div>
           </div>
-          <div class="card-footer bg-transparent border-top border-secondary">
-            <a href="{% url 'properties:property_detail' property.slug %}" class="btn btn-outline-info btn-sm w-100">
-              View Details
-            </a>
+          <div class="prop-slide-footer">
+            <a href="{% url 'properties:detail' property.slug %}" class="btn btn-outline-info btn-sm w-100">View Details</a>
           </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-    <div class="text-center mt-4">
-      <a href="{% url 'properties:property_list' %}" class="btn btn-outline-info btn-lg">
-        View All Properties <i class="bi bi-arrow-right"></i>
-      </a>
-    </div>
+  </div>
+  <div class="text-center mt-5">
+    <a href="{% url 'properties:list' %}" class="btn btn-outline-info btn-lg">
+      View All Properties <i class="bi bi-arrow-right"></i>
+    </a>
   </div>
 </section>
 {% endif %}
 
-<!-- CTA Section -->
-<section class="cta-section section-padding">
-  <div class="container text-center">
-    <h2 class="section-title mb-3">Ready to Get <span class="text-info">Started</span>?</h2>
-    <p class="text-muted mb-4 mx-auto" style="max-width: 600px;">
-      Whether you're looking for a rental, want your property managed, or interested in investing — CyberProp has you covered.
-    </p>
-    <div class="d-flex justify-content-center gap-3 flex-wrap">
-      <a href="{% url 'properties:property_list' %}" class="btn btn-outline-info btn-lg">
+<!-- ========================================================= CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="text-center mb-5">
+      <p class="eyebrow">Get In Touch</p>
+      <h2 class="section-title">Contact <span class="glow-text">Us</span></h2>
+      <p class="text-muted">We'd love to hear from you</p>
+    </div>
+
+    {% if messages %}
+    <div class="row justify-content-center mb-4">
+      <div class="col-lg-10">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row g-5">
+      <!-- Info side -->
+      <div class="col-lg-5" id="contactInfoCol">
+        <div class="contact-info-item">
+          <div class="contact-info-icon"><i class="bi bi-geo-alt"></i></div>
+          <div>
+            <div class="contact-info-label">Office</div>
+            <div class="contact-info-value" style="white-space:pre-line">{{ settings.contact_address }}</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon"><i class="bi bi-envelope"></i></div>
+          <div>
+            <div class="contact-info-label">Email</div>
+            <div class="contact-info-value"><a href="mailto:{{ settings.contact_email }}" class="text-light text-decoration-none">{{ settings.contact_email }}</a></div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon"><i class="bi bi-telephone"></i></div>
+          <div>
+            <div class="contact-info-label">Phone</div>
+            <div class="contact-info-value"><a href="tel:{{ settings.contact_phone }}" class="text-light text-decoration-none">{{ settings.contact_phone }}</a></div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon"><i class="bi bi-clock"></i></div>
+          <div>
+            <div class="contact-info-label">Hours</div>
+            <div class="contact-info-value">
+              {{ settings.contact_hours_weekday }}<br>
+              {{ settings.contact_hours_saturday }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form side -->
+      <div class="col-lg-7" id="contactFormCol">
+        <div class="contact-form-box">
+          <form method="post" action="{% url 'core:contact' %}" class="contact-form">
+            {% csrf_token %}
+            <input type="hidden" name="from_homepage" value="1">
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Full Name *</label>
+                <input type="text" class="form-control" name="name" required>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Email Address *</label>
+                <input type="email" class="form-control" name="email" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label small text-muted">Subject</label>
+                <input type="text" class="form-control" name="subject">
+              </div>
+              <div class="col-12">
+                <label class="form-label small text-muted">Message *</label>
+                <textarea class="form-control" name="message" rows="5" required></textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-outline-info btn-lg">
+                  <i class="bi bi-send"></i> Send Message
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== CTA BAND -->
+<section class="cta-band" id="ctaBand">
+  <div class="container">
+    <h2 class="section-title mb-3" id="ctaTitle">{{ settings.cta_title }}</h2>
+    <p class="text-muted mb-4 mx-auto" style="max-width:600px;">{{ settings.cta_subtitle }}</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap" id="ctaButtons">
+      <a href="{% url 'properties:list' %}" class="btn btn-outline-info btn-lg">
         <i class="bi bi-search"></i> Find a Property
       </a>
-      <a href="{% url 'core:contact' %}" class="btn btn-outline-light btn-lg">
+      <a href="#contact" class="btn btn-outline-light btn-lg">
         <i class="bi bi-envelope"></i> Contact Us
       </a>
     </div>
   </div>
 </section>
+
 {% endblock %}
 
 {% block extra_js %}
-<!-- GSAP Core + ScrollTrigger -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8os0V2s26icpHNpDaz0dLcYq+yR2hB/9Rjam7eFBMdSqO2vUPmFnz0Lz0cIBTO3OQEe0KyFkmXx==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{% static 'js/gsap-animations.js' %}"></script>
 {% endblock %}
+
