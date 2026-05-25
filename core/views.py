@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 
 from properties.models import Property
-from .models import SiteSettings
+from .models import SiteSettings, ContactMessage
 
 
 def home(request):
@@ -24,15 +24,22 @@ def about(request):
 
 
 def contact(request):
-    """Contact page with basic form handling."""
+    """Contact page — saves submissions to DB."""
     settings = SiteSettings.get()
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
         message_text = request.POST.get('message', '').strip()
         from_homepage = request.POST.get('from_homepage')
 
         if name and email and message_text:
+            ContactMessage.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message_text,
+            )
             messages.success(
                 request,
                 'Thank you for your message! We will get back to you shortly.',

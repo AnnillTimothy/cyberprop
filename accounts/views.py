@@ -14,7 +14,7 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Registration successful. Welcome to CyberProp!')
-            return redirect('dashboard:home')
+            return redirect('core:home')
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})

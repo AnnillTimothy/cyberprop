@@ -7,6 +7,7 @@
 </div>
 <ul class="nav nav-tabs mb-3" role="tablist">
   <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#details">Details</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#imagestab">Images</a></li>
   <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#financials">Financials</a></li>
   <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#maint">Maintenance</a></li>
   <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#bookingstab">Bookings</a></li>
@@ -16,10 +17,59 @@
     <div class="section-card">
       <form method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="row g-3">{% for field in form %}<div class="{% if field.name == 'description' or field.name == 'amenities' %}col-12{% else %}col-md-6 col-lg-4{% endif %} mb-2"><label class="form-label">{{ field.label }}</label>{% if field.field.widget.input_type == 'checkbox' %}<div class="form-check"><input type="checkbox" name="{{ field.name }}" class="form-check-input" {% if field.value %}checked{% endif %}><label class="form-check-label">{{ field.label }}</label></div>{% else %}{{ field }}{% endif %}{% if field.errors %}<div class="text-danger small">{{ field.errors.0 }}</div>{% endif %}</div>{% endfor %}</div>
+
+        <hr style="border-color:rgba(0,212,255,0.15);margin:1.5rem 0;">
+        <h6 style="color:var(--cyan)" class="mb-3"><i class="bi bi-images"></i> Property Images</h6>
+        {{ image_formset.management_form }}
+        <div class="row g-3 mb-3">
+          {% for img_form in image_formset %}
+          <div class="col-md-6 col-lg-4">
+            <div style="background:#111125;border:1px solid rgba(0,212,255,0.12);border-radius:.5rem;padding:1rem;">
+              {% if img_form.instance.pk %}
+                <img src="{{ img_form.instance.image.url }}" style="width:100%;height:100px;object-fit:cover;border-radius:4px;margin-bottom:.5rem;" alt="Image">
+              {% endif %}
+              {% for hidden in img_form.hidden_fields %}{{ hidden }}{% endfor %}
+              <div class="mb-2"><label class="form-label small">Image</label>{{ img_form.image }}</div>
+              <div class="mb-2"><label class="form-label small">Caption</label>{{ img_form.caption }}</div>
+              <div class="form-check mb-2">{{ img_form.is_primary }}<label class="form-check-label small ms-1">Primary</label></div>
+              {% if img_form.instance.pk %}<div class="form-check">{{ img_form.DELETE }}<label class="form-check-label small ms-1 text-danger">Delete</label></div>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
         <div class="mt-3"><button type="submit" class="btn-cyber-green"><i class="bi bi-check-lg"></i> Save Changes</button></div>
       </form>
     </div>
   </div>
+
+  <div class="tab-pane fade" id="imagestab">
+    <div class="section-card">
+      <h6 style="color:var(--cyan)" class="mb-3"><i class="bi bi-images"></i> Current Images ({{ property_images|length }})</h6>
+      {% if property.featured_image %}
+      <div class="mb-3">
+        <p class="text-muted small mb-1">Featured Image</p>
+        <img src="{{ property.featured_image.url }}" style="max-height:200px;border-radius:8px;border:1px solid rgba(0,212,255,0.2);" alt="Featured">
+      </div>
+      {% endif %}
+      <div class="row g-3">
+        {% for img in property_images %}
+        <div class="col-md-4">
+          <div style="background:#111125;border-radius:8px;overflow:hidden;border:1px solid rgba(0,212,255,0.12);">
+            <img src="{{ img.image.url }}" style="width:100%;height:150px;object-fit:cover;" alt="{{ img.caption|default:'Property image' }}">
+            <div class="p-2">
+              {% if img.caption %}<p class="small text-muted mb-1">{{ img.caption }}</p>{% endif %}
+              {% if img.is_primary %}<span class="badge badge-cyan" style="font-size:.7rem;">Primary</span>{% endif %}
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12"><p class="text-muted">No additional images. Add them in the Details tab.</p></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
   <div class="tab-pane fade" id="financials">
     <div class="section-card mb-3"><h6 style="color:var(--cyan)">Recent Income</h6><table class="cyber-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Paid</th></tr></thead><tbody>{% for i in incomes %}<tr><td>{{ i.date }}</td><td>{{ i.income_type }}</td><td>R{{ i.amount|floatformat:2 }}</td><td>{% if i.is_paid %}<span class="badge badge-green">Yes</span>{% else %}<span class="badge badge-dim">No</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted">No income records</td></tr>{% endfor %}</tbody></table></div>
     <div class="section-card"><h6 style="color:var(--pink)">Recent Expenses</h6><table class="cyber-table"><thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Description</th></tr></thead><tbody>{% for e in expenses %}<tr><td>{{ e.date }}</td><td>{{ e.category }}</td><td>R{{ e.amount|floatformat:2 }}</td><td>{{ e.description }}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted">No expenses</td></tr>{% endfor %}</tbody></table></div>

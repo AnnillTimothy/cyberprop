@@ -1,16 +1,20 @@
 from datetime import date
 from decimal import Decimal
 
+from django import forms as django_forms
+from django.contrib import messages as django_messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Sum, Q, Count
+from django.forms import inlineformset_factory
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.utils.text import slugify
 
 from accounts.models import CustomUser
-from properties.models import Property, Booking, Enquiry, PropertySubmission
+from core.models import ContactMessage
+from properties.models import Property, PropertyImage, Booking, Enquiry, PropertySubmission
 from management_app.models import (
     Expense, Income, MaintenanceRequest, CleaningSchedule, OwnerPayout,
 )
@@ -53,10 +57,12 @@ def dashboard_home(request):
     ).count()
     pending_enquiries = Enquiry.objects.filter(is_read=False).count()
     total_orders = Order.objects.count()
+    pending_contact_messages = ContactMessage.objects.filter(status='new').count()
 
     recent_bookings = Booking.objects.select_related('property', 'user').order_by('-created_at')[:5]
     recent_enquiries = Enquiry.objects.select_related('property').order_by('-created_at')[:5]
     recent_maintenance = MaintenanceRequest.objects.select_related('property').order_by('-created_at')[:5]
+    recent_contact_messages = ContactMessage.objects.order_by('-created_at')[:5]
 
     # Monthly income/expense data for charts (last 6 months)
     months_data = []
@@ -86,9 +92,11 @@ def dashboard_home(request):
         'pending_maintenance': pending_maintenance,
         'pending_enquiries': pending_enquiries,
         'total_orders': total_orders,
+        'pending_contact_messages': pending_contact_messages,
         'recent_bookings': recent_bookings,
         'recent_enquiries': recent_enquiries,
         'recent_maintenance': recent_maintenance,
+        'recent_contact_messages': recent_contact_messages,
         'months_data': months_data,
     }
     return render(request, 'dashboard/home.html', context)
@@ -161,35 +169,60 @@ def property_admin_list(request):
 @staff_required
 def property_admin_detail(request, pk):
     prop = get_object_or_404(Property, pk=pk)
+    ImageFormSet = inlineformset_factory(
+        Property, PropertyImage,
+        fields=['image', 'caption', 'is_primary'],
+        extra=3, can_delete=True,
+        widgets={
+            'caption': django_forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Caption (optional)'}),
+            'is_primary': django_forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+    )
     if request.method == 'POST':
         form = PropertyAdminForm(request.POST, request.FILES, instance=prop)
-        if form.is_valid():
+        image_formset = ImageFormSet(request.POST, request.FILES, instance=prop, prefix='images')
+        if form.is_valid() and image_formset.is_valid():
             p = form.save(commit=False)
             if not p.slug:
                 p.slug = slugify(p.title)
             p.save()
+            image_formset.save()
+            django_messages.success(request, 'Property saved successfully.')
             return redirect('dashboard:property_detail', pk=pk)
     else:
         form = PropertyAdminForm(instance=prop)
+        image_formset = ImageFormSet(instance=prop, prefix='images')
 
     bookings = prop.bookings.all().order_by('-created_at')[:10]
     maintenance = prop.maintenance_requests.all().order_by('-created_at')[:10]
     incomes = prop.incomes.all().order_by('-date')[:10]
     expenses = prop.expenses.all().order_by('-date')[:10]
+    property_images = prop.images.all()
 
     return render(request, 'dashboard/property_detail_admin.html', {
-        'property': prop, 'form': form,
+        'property': prop, 'form': form, 'image_formset': image_formset,
         'bookings': bookings, 'maintenance': maintenance,
         'incomes': incomes, 'expenses': expenses,
+        'property_images': property_images,
     })
 
 
 @login_required
 @staff_required
 def property_admin_create(request):
+    ImageFormSet = inlineformset_factory(
+        Property, PropertyImage,
+        fields=['image', 'caption', 'is_primary'],
+        extra=3, can_delete=True,
+        widgets={
+            'caption': django_forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Caption (optional)'}),
+            'is_primary': django_forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+    )
     if request.method == 'POST':
         form = PropertyAdminForm(request.POST, request.FILES)
-        if form.is_valid():
+        image_formset = ImageFormSet(request.POST, request.FILES, prefix='images')
+        if form.is_valid() and image_formset.is_valid():
             prop = form.save(commit=False)
             base_slug = slugify(prop.title)
             slug = base_slug
@@ -199,10 +232,13 @@ def property_admin_create(request):
                 n += 1
             prop.slug = slug
             prop.save()
+            image_formset.instance = prop
+            image_formset.save()
             return redirect('dashboard:property_list')
     else:
         form = PropertyAdminForm()
-    return render(request, 'dashboard/property_form.html', {'form': form, 'edit': False})
+        image_formset = ImageFormSet(prefix='images')
+    return render(request, 'dashboard/property_form.html', {'form': form, 'image_formset': image_formset, 'edit': False})
 
 
 @login_required
@@ -378,3 +414,41 @@ def reports(request):
         'pending_payouts': pending_payouts,
     }
     return render(request, 'dashboard/reports.html', context)
+
+
+
+# ─── Contact Messages ────────────────────────────────────────────────────────
+
+@login_required
+@staff_required
+def contact_message_list(request):
+    qs = ContactMessage.objects.all().order_by('-created_at')
+    status = request.GET.get('status', '')
+    if status:
+        qs = qs.filter(status=status)
+    paginator = Paginator(qs, 20)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'dashboard/contact_message_list.html', {
+        'messages_qs': page, 'status': status,
+        'status_choices': ContactMessage.STATUS_CHOICES,
+    })
+
+
+@login_required
+@staff_required
+def contact_message_detail(request, pk):
+    msg = get_object_or_404(ContactMessage, pk=pk)
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        admin_notes = request.POST.get('admin_notes', '').strip()
+        valid_statuses = [s[0] for s in ContactMessage.STATUS_CHOICES]
+        if new_status in valid_statuses:
+            msg.status = new_status
+        msg.admin_notes = admin_notes
+        msg.save()
+        django_messages.success(request, 'Contact message updated.')
+        return redirect('dashboard:contact_message_detail', pk=pk)
+    return render(request, 'dashboard/contact_message_detail.html', {
+        'contact_msg': msg,
+        'status_choices': ContactMessage.STATUS_CHOICES,
+    })
