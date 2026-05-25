@@ -1,0 +1,52 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block page_title %}Contact Message — {{ contact_msg.name }}{% endblock %}
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="page-title mb-0">Contact Message</h5>
+  <a href="{% url 'dashboard:contact_message_list' %}" class="btn-cyber"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="section-card mb-3">
+      <h6 style="color:var(--cyan)" class="mb-3"><i class="bi bi-person"></i> From</h6>
+      <p class="mb-1"><strong>{{ contact_msg.name }}</strong></p>
+      <p class="mb-1 text-muted"><a href="mailto:{{ contact_msg.email }}" style="color:var(--cyan)">{{ contact_msg.email }}</a></p>
+      {% if contact_msg.subject %}
+      <p class="mb-0"><span class="text-muted">Subject:</span> {{ contact_msg.subject }}</p>
+      {% endif %}
+    </div>
+
+    <div class="section-card mb-3">
+      <h6 style="color:var(--cyan)" class="mb-3"><i class="bi bi-chat-left-text"></i> Message</h6>
+      <p style="white-space:pre-line;line-height:1.8;">{{ contact_msg.message }}</p>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="section-card">
+      <h6 style="color:var(--cyan)" class="mb-3"><i class="bi bi-pencil-square"></i> Update Status</h6>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-select">
+            {% for val, label in status_choices %}
+              <option value="{{ val }}" {% if contact_msg.status == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Internal Notes</label>
+          <textarea name="admin_notes" class="form-control" rows="4" placeholder="Notes for your team…">{{ contact_msg.admin_notes }}</textarea>
+        </div>
+        <button type="submit" class="btn-cyber-green w-100"><i class="bi bi-check-lg"></i> Save</button>
+      </form>
+
+      <hr style="border-color:rgba(0,212,255,0.15);margin:1rem 0;">
+      <p class="mb-1 small text-muted">Received: {{ contact_msg.created_at|date:"d M Y H:i" }}</p>
+      <p class="mb-0 small text-muted">Updated: {{ contact_msg.updated_at|date:"d M Y H:i" }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

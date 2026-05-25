@@ -10,6 +10,7 @@
 <div class="row g-3 mb-4">
   <div class="col-lg-3 col-md-6"><div class="kpi-card" style="border-color:rgba(255,184,0,0.2)"><div class="d-flex justify-content-between align-items-center"><div><div class="kpi-num" style="color:var(--warn)">{{ pending_enquiries }}</div><div class="kpi-label">Pending Enquiries</div></div><div class="kpi-icon" style="color:var(--warn)"><i class="bi bi-envelope"></i></div></div></div></div>
   <div class="col-lg-3 col-md-6"><div class="kpi-card" style="border-color:rgba(0,255,136,0.2)"><div class="d-flex justify-content-between align-items-center"><div><div class="kpi-num" style="color:var(--green)">{{ total_orders }}</div><div class="kpi-label">Total Orders</div></div><div class="kpi-icon" style="color:var(--green)"><i class="bi bi-cart3"></i></div></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="kpi-card" style="border-color:rgba(138,43,226,0.2)"><div class="d-flex justify-content-between align-items-center"><div><div class="kpi-num" style="color:#bb86fc">{{ pending_contact_messages }}</div><div class="kpi-label">New Contact Messages</div></div><div class="kpi-icon" style="color:#bb86fc"><i class="bi bi-chat-left-text"></i></div></div></div></div>
 </div>
 <div class="row g-3">
   <div class="col-lg-6">
@@ -17,6 +18,7 @@
       <h6 style="color:var(--cyan)"><i class="bi bi-activity"></i> Recent Activity</h6>
       {% for b in recent_bookings %}<div class="activity-item"><i class="bi bi-calendar-check text-info"></i> <strong>{{ b.user.username }}</strong> booked viewing at <strong>{{ b.property.title }}</strong> <span class="text-muted small">{{ b.created_at|timesince }} ago</span></div>{% endfor %}
       {% for e in recent_enquiries %}<div class="activity-item"><i class="bi bi-envelope text-warning"></i> Enquiry from <strong>{{ e.name }}</strong> about <strong>{{ e.property.title }}</strong> <span class="text-muted small">{{ e.created_at|timesince }} ago</span></div>{% endfor %}
+      {% for cm in recent_contact_messages %}<div class="activity-item"><i class="bi bi-chat-left-text" style="color:#bb86fc"></i> Contact from <strong>{{ cm.name }}</strong>{% if cm.subject %} — {{ cm.subject }}{% endif %} <span class="badge badge-dim ms-1">{{ cm.get_status_display }}</span> <span class="text-muted small">{{ cm.created_at|timesince }} ago</span> <a href="{% url 'dashboard:contact_message_detail' cm.pk %}" class="ms-2 btn-cyber" style="padding:.15rem .5rem;font-size:.75rem;">View</a></div>{% endfor %}
     </div>
   </div>
   <div class="col-lg-6">

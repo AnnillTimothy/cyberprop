@@ -193,6 +193,8 @@
         <i class="bi bi-calendar-check"></i> Bookings</a>
       <a href="{% url 'dashboard:enquiry_list' %}" class="nav-link {% if 'enquiry' in request.resolver_match.url_name %}active{% endif %}">
         <i class="bi bi-envelope"></i> Enquiries</a>
+      <a href="{% url 'dashboard:contact_message_list' %}" class="nav-link {% if 'contact_message' in request.resolver_match.url_name %}active{% endif %}">
+        <i class="bi bi-chat-left-text"></i> Contact Messages</a>
       <a href="{% url 'dashboard:order_list' %}" class="nav-link {% if 'order' in request.resolver_match.url_name %}active{% endif %}">
         <i class="bi bi-cart3"></i> Orders</a>
       <a href="{% url 'dashboard:reports' %}" class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
